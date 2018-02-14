@@ -64,7 +64,9 @@ def plot(x1_val, y1_val, x2_val, y2_val):
 
 def plottest(xarr):
 	# plt.plot(xarr[:,0], xarr[:,1])
-	print xarr[:,0, 0]
+	plt.plot(xarr[:, 0, 0], xarr[:, 0, 1])
+	plt.plot(xarr[:, 1, 0], xarr[:, 1, 1])
+	plt.show()
 
 
 def main():
