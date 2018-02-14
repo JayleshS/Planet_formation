@@ -7,7 +7,7 @@ def init_2body(ecc):
     xarr = np.zeros((3, pars.Np))
     varr = np.zeros((3, pars.Np))
     marr = np.zeros(pars.Np)
-
+    print 'hi'
     marr[0] = pars.mSun
     marr[1] = pars.mEarth
 
