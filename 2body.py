@@ -37,7 +37,7 @@ def midpoint(dt, tfinal):
 	dingems = [xarr]
 	time = 0
 	# print dingems
-	while time < tfinal/10:
+	while time < tfinal:
 		acc = fn.forces(xarr, varr, marr)
 		xmid = xarr + varr * dt / 2
 		vmid = varr + acc * dt / 2
@@ -64,7 +64,9 @@ def plot(x1_val, y1_val, x2_val, y2_val):
 
 def plottest(xarr):
 	# plt.plot(xarr[:,0], xarr[:,1])
-	print xarr[:,0, 0]
+	plt.plot(xarr[:, 0, 0], xarr[:, 0, 1])
+	plt.plot(xarr[:, 1, 0], xarr[:, 1, 1])
+	plt.show()
 
 
 def main():
@@ -77,7 +79,7 @@ def main():
 	# plot(euler(xarr, varr, marr)[:-1])
 	# for time in [0.1*pars.yr, 0.01*pars.yr, 0.001*pars.yr]:
 	x1_mid, y1_mid, x2_mid, y2_mid, e_error_mid, ding = midpoint(dt, tfinal)
-	plottest(ding)
+	plot(x1_mid, y1_mid, x2_mid, y2_mid)
 	# print ding
 	# plot(x1_mid, y1_mid, x2_mid, y2_mid)
 	# print e_error_euler
