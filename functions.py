@@ -20,7 +20,7 @@ def init_2body(ecc):
     varr[:, 1] = [0., vKep * np.sqrt((1-ecc)/(1+ecc)), 0.]
 
     return xarr, varr, marr
-
+'''
 def forces(xarr, varr, marr):
     acc = np.zeros((3,pars.Np))
     for i in range(pars.Np):
@@ -37,6 +37,7 @@ def forces(xarr, varr, marr):
     return acc
 
 
+
 def e_tot(xarr, varr, marr):
     Ekin = 0
     Epot = 0
@@ -47,5 +48,27 @@ def e_tot(xarr, varr, marr):
             rji = xarr[:, j] - xarr[:, i]
             r1 = np.sqrt(sum(rji**2))
             Epot += -(pars.gN*marr[i]*marr[j])/r1
+    Etot = Ekin + Epot
+    return Etot
+'''
+def forces(xarr, varr, marr):
+    acc = np.zeros((3,pars.Np))
+    for i in range(pars.Np):
+        for j in range(i+1, pars.Np):
+            rji = xarr[:,j] - xarr[:,i]
+
+            acc[:,i] += pars.gN*rji/sum(rji**2)**(3/2) * marr[j]
+            acc[:,j] -= pars.gN*rji/sum(rji**2)**(3/2) * marr[i]
+
+    return acc
+
+
+def e_tot(xarr, varr, marr):
+    Ekin = 0
+    Epot = 0
+    for i in range(pars.Np):
+        Ekin += 0.5*marr[i]*sum(varr[:, i]**2)
+        for j in range(i+1, pars.Np):
+            Epot += -(pars.gN*marr[i]*marr[j]) / (np.sqrt(sum((xarr[:, j] - xarr[:, i]))**2))
     Etot = Ekin + Epot
     return Etot
