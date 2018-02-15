@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 # xarr, varr, marr = fn.init_2body(0)
 # etot0 = fn.e_tot(xarr, varr, marr)
 
-tfinal = 1e8
+tfinal = 0.002*pars.yr
 dt = 0.001*pars.yr
 # etot0 = fn.e_tot(xarr, varr, marr)
 
@@ -34,39 +34,49 @@ def euler(dt, tfinal):
 def midpoint(dt, tfinal):
 	xarr, varr, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(xarr, varr, marr)
-	dingems = [xarr]
+	coords = [xarr]
 	time = 0
-	# print dingems
-	while time < tfinal:
+
+	while time < tfinal:	
 		acc = fn.forces(xarr, varr, marr)
 		xmid = xarr + varr * dt / 2
 		vmid = varr + acc * dt / 2
 		amid = fn.forces(xmid, vmid, marr)
 		xarr += vmid * dt
 		varr += amid * dt
+
 		x1.append(xarr[0, 0])
 		y1.append(xarr[1, 0])
 		x2.append(xarr[0, 1])
 		y2.append(xarr[1, 1])
-		# dingems = np.append(dingems, [xarr], axis=0)
-		dingems.append(xarr)
+		# coords.append(xarr)
+
 		time += dt
+
 	etot1 = fn.e_tot(xarr, varr, marr)
 	e_error = (etot1 - etot0) / etot0
-	# print dingems
-	return x1, y1, x2, y2, e_error, np.array(dingems)
+	print x1
+	print y1
+	print x2
+	print y2 
+	return x1, y1, x2, y2, e_error, np.array(coords)
 
 
 def plot(x1_val, y1_val, x2_val, y2_val):
-	plt.plot(x1_val, y1_val)
-	plt.plot(x2_val, y2_val)
-	plt.show()
+	# plt.plot(x1_val, y1_val)
+	# plt.plot(x2_val, y2_val)
+	# print x2_val
+	# plt.show()
+	pass
 
 def plottest(xarr):
 	# plt.plot(xarr[:,0], xarr[:,1])
-	plt.plot(xarr[:, 0, 0], xarr[:, 0, 1])
-	plt.plot(xarr[:, 1, 0], xarr[:, 1, 1])
-	plt.show()
+	# plt.plot(xarr[:, 0, 0], xarr[:, 0, 1])
+	# plt.plot(xarr[:, 1, 0], xarr[:, 1, 1])
+	# plt.show()
+	# print xarr[:, 1, 0]
+	# print xarr
+	pass
 
 
 def main():
@@ -79,7 +89,9 @@ def main():
 	# plot(euler(xarr, varr, marr)[:-1])
 	# for time in [0.1*pars.yr, 0.01*pars.yr, 0.001*pars.yr]:
 	x1_mid, y1_mid, x2_mid, y2_mid, e_error_mid, ding = midpoint(dt, tfinal)
-	plot(x1_mid, y1_mid, x2_mid, y2_mid)
+	# plot(x1_mid, y1_mid, x2_mid, y2_mid)
+	# plottest(ding)
+
 	# print ding
 	# plot(x1_mid, y1_mid, x2_mid, y2_mid)
 	# print e_error_euler
