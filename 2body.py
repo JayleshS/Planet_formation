@@ -60,6 +60,17 @@ def midpoint(dt, tfinal):
 	print x2
 	print y2 
 	return x1, y1, x2, y2, e_error, np.array(coords)
+	# print dingems
+	return x1, y1, x2, y2, e_error, np.array(dingems)
+
+def leapfrog(dt, tfinal):
+	xarr, varr, marr = fn.init_2body(0)
+	etot0 = fn.e_tot(xarr, varr, marr)
+	dingems = [xarr]
+	time = 0
+	# print dingems
+	while time < tfinal:
+		acc = fn.forces(xarr, varr, marr)
 
 
 def plot(x1_val, y1_val, x2_val, y2_val):
