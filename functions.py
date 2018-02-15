@@ -22,7 +22,7 @@ def init_2body(ecc):
 
     return xarr, varr, marr
 
-
+print 'hi'
 def forces(xarr, varr, marr):
     acc = np.zeros((3,pars.Np))
     for i in range(pars.Np):
