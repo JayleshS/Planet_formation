@@ -10,7 +10,16 @@ import matplotlib.pyplot as plt
 tfinal = 0.002*pars.yr
 dt = 0.001*pars.yr
 # etot0 = fn.e_tot(xarr, varr, marr)
+'''
+############################################
+********************************************
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+save_list = []
+....loopje...:
+	 save_list.append(list(matrix)))
 
+lijkt te werken!!!!!!!!!!!!!!!!!!!!!!!!!!!!!	
+'''
 
 x1, y1, x2, y2 = ([] for i in range(4))
 
@@ -37,7 +46,7 @@ def midpoint(dt, tfinal):
 	coords = [xarr]
 	time = 0
 
-	while time < tfinal:	
+	while time < tfinal:
 		acc = fn.forces(xarr, varr, marr)
 		xmid = xarr + varr * dt / 2
 		vmid = varr + acc * dt / 2
@@ -58,7 +67,7 @@ def midpoint(dt, tfinal):
 	print x1
 	print y1
 	print x2
-	print y2 
+	print y2
 	return x1, y1, x2, y2, e_error, np.array(coords)
 	# print dingems
 	return x1, y1, x2, y2, e_error, np.array(dingems)
@@ -70,8 +79,17 @@ def leapfrog(dt, tfinal):
 	time = 0
 	# print dingems
 	while time < tfinal:
-		acc = fn.forces(xarr, varr, marr)
+		acc   = fn.forces(xarr, varr, marr)
+		varr += acc* dt/2
+		xarr += varr*dt
+		acc   = fn.forces(xarr, varr, marr)
+		varr += acc* dt/2
 
+		time += dt
+	etot1 = fn.e_tot(xarr, varr, marr)
+	e_error = (etot1 - etot0) / etot0
+
+	return xarr, varr
 
 def plot(x1_val, y1_val, x2_val, y2_val):
 	# plt.plot(x1_val, y1_val)
