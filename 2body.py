@@ -10,18 +10,9 @@ import matplotlib.pyplot as plt
 tfinal = 0.002*pars.yr
 dt = 0.001*pars.yr
 # etot0 = fn.e_tot(xarr, varr, marr)
-'''
-############################################
-********************************************
-$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-save_list = []
-....loopje...:
-	 save_list.append(list(matrix)))
 
-lijkt te werken!!!!!!!!!!!!!!!!!!!!!!!!!!!!!	
-'''
-
-x1, y1, x2, y2 = ([] for i in range(4))
+x = []
+v = []
 
 def euler(dt, tfinal):
 	xarr, varr, marr = fn.init_2body(0)
@@ -31,19 +22,24 @@ def euler(dt, tfinal):
 		acc = fn.forces(xarr, varr, marr)
 		xarr += varr*dt
 		varr += acc*dt
-		x1.append(xarr[0, 0])
-		y1.append(xarr[1, 0])
-		x2.append(xarr[0, 1])
-		y2.append(xarr[1, 1])
+
+		x.append(list(xarr))
+		v.append(list(varr))
+
+
 		time += dt
 	etot1 = fn.e_tot(xarr, varr, marr)
 	e_error = (etot1 - etot0) / etot0
-	return x1, y1, x2, y2, e_error
+	print 'x: ',x
+	return x, v, e_error
+
+print 'hi'
+euler(5.,10)
+
 
 def midpoint(dt, tfinal):
 	xarr, varr, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(xarr, varr, marr)
-	coords = [xarr]
 	time = 0
 
 	while time < tfinal:
@@ -54,28 +50,19 @@ def midpoint(dt, tfinal):
 		xarr += vmid * dt
 		varr += amid * dt
 
-		x1.append(xarr[0, 0])
-		y1.append(xarr[1, 0])
-		x2.append(xarr[0, 1])
-		y2.append(xarr[1, 1])
-		# coords.append(xarr)
+		x.append(list(xarr))
+		v.append(list(varr))
 
 		time += dt
 
 	etot1 = fn.e_tot(xarr, varr, marr)
 	e_error = (etot1 - etot0) / etot0
-	print x1
-	print y1
-	print x2
-	print y2
-	return x1, y1, x2, y2, e_error, np.array(coords)
-	# print dingems
-	return x1, y1, x2, y2, e_error, np.array(dingems)
+
+	return x, v, e_error
 
 def leapfrog(dt, tfinal):
 	xarr, varr, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(xarr, varr, marr)
-	dingems = [xarr]
 	time = 0
 	# print dingems
 	while time < tfinal:
@@ -108,6 +95,7 @@ def plottest(xarr):
 	pass
 
 
+
 def main():
 
 
@@ -117,7 +105,7 @@ def main():
 
 	# plot(euler(xarr, varr, marr)[:-1])
 	# for time in [0.1*pars.yr, 0.01*pars.yr, 0.001*pars.yr]:
-	x1_mid, y1_mid, x2_mid, y2_mid, e_error_mid, ding = midpoint(dt, tfinal)
+	x_mid,v_mid,  e_error_mid = midpoint(dt, tfinal)
 	# plot(x1_mid, y1_mid, x2_mid, y2_mid)
 	# plottest(ding)
 
