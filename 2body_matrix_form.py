@@ -20,10 +20,9 @@ def euler(dt, tfinal):
 	while time < tfinal:
 		acc = fn.forces(particles, marr)
 		particles[:,0,:] += particles[:,1,:]*dt
-		particles[:,1,:] += np.reshape(acc,(2,3))*dt
+		particles[:,1,:] += acc*dt
 
-		x_and_v.append(list(particles))
-
+		x_and_v.append(particles.tolist())
 
 		time += dt
 	etot1 = fn.e_tot(particles, marr)

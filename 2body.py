@@ -11,25 +11,27 @@ tfinal = 0.002*pars.yr
 dt = 0.001*pars.yr
 # etot0 = fn.e_tot(xarr, varr, marr)
 
-x_and_v =[]
+x = []
+v = []
 
 def euler(dt, tfinal):
-	particles, marr = fn.init_2body(0)
-	etot0 = fn.e_tot(particles, marr)
+	xarr, varr, marr = fn.init_2body(0)
+	etot0 = fn.e_tot(xarr, varr, marr)
 	time = 0
 	while time < tfinal:
-		acc = fn.forces(particles, marr)
-		particles[:,0,:] += particles[:,1,:]*dt
-		particles[:,1,:] += 1.
+		acc = fn.forces(xarr, varr, marr)
+		xarr += varr*dt
+		varr += acc*dt
 
-		x_and_v.append(list(particles))
+		x.append(list(xarr))
+		v.append(list(varr))
 
 
 		time += dt
-	etot1 = fn.e_tot(particles, marr)
+	etot1 = fn.e_tot(xarr, varr, marr)
 	e_error = (etot1 - etot0) / etot0
-
-	return x_and_v, e_error
+	print 'x: ',x
+	return x, v, e_error
 
 print 'hi'
 euler(5.,10)
@@ -38,6 +40,7 @@ euler(5.,10)
 def midpoint(dt, tfinal):
 	xarr, varr, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(xarr, varr, marr)
+	coords = [xarr]
 	time = 0
 
 	while time < tfinal:
@@ -50,12 +53,14 @@ def midpoint(dt, tfinal):
 
 		x.append(list(xarr))
 		v.append(list(varr))
+		# coords.append(xarr)
 
 		time += dt
 
 	etot1 = fn.e_tot(xarr, varr, marr)
 	e_error = (etot1 - etot0) / etot0
 
+	# print dingems
 	return x, v, e_error
 
 def leapfrog(dt, tfinal):

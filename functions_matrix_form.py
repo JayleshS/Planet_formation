@@ -85,13 +85,13 @@ def init_2body(ecc):
     return particles, marr
 
 def forces(particles, marr):
-    acc = np.zeros((3,pars.Np))
+    acc = np.zeros((pars.Np,3))
     for i in range(pars.Np):
         for j in range(i+1, pars.Np):
             rji = particles[j,0,:] - particles[i,0,:]
 
-            acc[:,i] += pars.gN*rji/sum(rji**2)**(3/2) * marr[j]
-            acc[:,j] -= pars.gN*rji/sum(rji**2)**(3/2) * marr[i]
+            acc[i,:] += pars.gN*rji/sum(rji**2)**(3/2) * marr[j]
+            acc[j,:] -= pars.gN*rji/sum(rji**2)**(3/2) * marr[i]
 
     return acc
 
