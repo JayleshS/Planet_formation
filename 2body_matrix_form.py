@@ -20,7 +20,7 @@ def euler(dt, tfinal):
 	while time < tfinal:
 		acc = fn.forces(particles, marr)
 		particles[:,0,:] += particles[:,1,:]*dt
-		particles[:,1,:] += acc*dt
+		particles[:,1,:] += acc[:,None]*dt
 
 		x_and_v.append(list(particles))
 
@@ -28,13 +28,15 @@ def euler(dt, tfinal):
 		time += dt
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
-
+	print 'particles: \n', particles
+	print 'acc: \n ', acc
 	return x_and_v, e_error
 
-print 'hi'
-euler(5.,10)
+euler(1.,1)
 
 
+
+'''
 def midpoint(dt, tfinal):
 	xarr, varr, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(xarr, varr, marr)
@@ -93,6 +95,10 @@ def plottest(xarr):
 	pass
 
 
+'''
+
+
+
 
 def main():
 
@@ -101,9 +107,9 @@ def main():
 	# plot(x1_euler, y1_euler, x2_euler, y2_euler)
 	# print e_error_euler
 
-	# plot(euler(xarr, varr, marr)[:-1])
+	# plot(euler(positions, marr)[:-1])
 	# for time in [0.1*pars.yr, 0.01*pars.yr, 0.001*pars.yr]:
-	x_mid,v_mid,  e_error_mid = midpoint(dt, tfinal)
+	'''x_mid,v_mid,  e_error_mid = midpoint(dt, tfinal)'''
 	# plot(x1_mid, y1_mid, x2_mid, y2_mid)
 	# plottest(ding)
 

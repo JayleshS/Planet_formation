@@ -95,7 +95,6 @@ def forces(particles, marr):
 
     return acc
 
-
 def e_tot(particles, marr):
     Ekin = 0
     Epot = 0
