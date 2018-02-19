@@ -27,54 +27,53 @@ def euler(dt, tfinal):
 		time += dt
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
-	print 'x_and_v: \n', x_and_v
 	return x_and_v, e_error
 
 euler(1.,10)
 
 
 
-'''
 def midpoint(dt, tfinal):
-	xarr, varr, marr = fn.init_2body(0)
-	etot0 = fn.e_tot(xarr, varr, marr)
+	particles, marr = fn.init_2body(0)
+	etot0 = fn.e_tot(particles, marr)
 	time = 0
 
 	while time < tfinal:
-		acc = fn.forces(xarr, varr, marr)
-		xmid = xarr + varr * dt / 2
-		vmid = varr + acc * dt / 2
-		amid = fn.forces(xmid, vmid, marr)
-		xarr += vmid * dt
-		varr += amid * dt
+		acc = fn.forces(particles, marr)
+		particles_mid = np.zeros((pars.Np, 2, 3))
+		particles_mid[:, 0, :] = particles[:,0,:] + particles[:,1,:] * dt / 2
+		particles_mid[:, 1, :] = particles[:,1,:] + acc * dt / 2
 
-		x.append(list(xarr))
-		v.append(list(varr))
+		amid = fn.forces(particles_mid, marr)
+		particles[:, 0, :] += particles_mid[:, 1, :] * dt
+		particles[:,1,:] += amid * dt
+
+		x_and_v.append(particles.tolist())
 
 		time += dt
 
-	etot1 = fn.e_tot(xarr, varr, marr)
+	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
 
-	return x, v, e_error
+	return particles, e_error
 
 def leapfrog(dt, tfinal):
-	xarr, varr, marr = fn.init_2body(0)
-	etot0 = fn.e_tot(xarr, varr, marr)
+	particles, marr = fn.init_2body(0)
+	etot0 = fn.e_tot(particles, marr)
 	time = 0
 	# print dingems
 	while time < tfinal:
-		acc   = fn.forces(xarr, varr, marr)
-		varr += acc* dt/2
-		xarr += varr*dt
-		acc   = fn.forces(xarr, varr, marr)
-		varr += acc* dt/2
+		acc   = fn.forces(particles, marr)
+		particles[:,1,:] += acc* dt/2
+		particles[:,0,:] += particles[:,1,:]*dt
+		acc   = fn.forces(particles, marr)
+		partciles[:,1,:] += acc* dt/2
 
 		time += dt
-	etot1 = fn.e_tot(xarr, varr, marr)
+	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
 
-	return xarr, varr
+	return particles
 
 def plot(x1_val, y1_val, x2_val, y2_val):
 	# plt.plot(x1_val, y1_val)
@@ -93,7 +92,7 @@ def plottest(xarr):
 	pass
 
 
-'''
+
 
 
 
