@@ -54,7 +54,7 @@ def midpoint(dt, tfinal):
 
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
-	print 'dag'
+	print 'hoi'
 
 	return particles, e_error
 
