@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 # xarr, varr, marr = fn.init_2body(0)
 # etot0 = fn.e_tot(xarr, varr, marr)
 
-tfinal = 0.5*pars.yr
+tfinal = 2.5*pars.yr
 dt = 0.001*pars.yr
 # etot0 = fn.e_tot(xarr, varr, marr)
 
@@ -81,14 +81,14 @@ def plot(x1_val, y1_val, x2_val, y2_val):
 	plt.show()
 	pass
 
-def plottest(xarr):
-	# plt.plot(xarr[:,0], xarr[:,1])
-	# plt.plot(xarr[:, 0, 0], xarr[:, 0, 1])
-	# plt.plot(xarr[:, 1, 0], xarr[:, 1, 1])
-	# plt.show()
-	# print xarr[:, 1, 0]
-	# print xarr
-	pass
+def plottest(particles):
+	'''
+	Plots list (t, Np, 2, 3)
+	'''
+	xarr = np.array(particles)
+	for planet in range(pars.Np):
+		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1])
+	plt.show()
 
 
 
@@ -97,11 +97,10 @@ def plottest(xarr):
 
 
 def main():
-	print dt
+	# print dt
 	xv, error = euler(dt, tfinal)
+	plottest(xv)
 	# print xv
-	# x1_euler, y1_euler, x2_euler, y2_euler, e_error_euler = euler(xarr, varr, marr)
-	# plot(x1_euler, y1_euler, x2_euler, y2_euler)
-	# print e_error_euler
+
 if __name__ == '__main__':
 	main()
