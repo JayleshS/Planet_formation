@@ -90,8 +90,10 @@ def forces(particles, marr):
         for j in range(i+1, pars.Np):
             rji = particles[j,0,:] - particles[i,0,:]
 
-            acc[i,:] += pars.gN*rji/sum(rji**2)**(3/2) * marr[j]
-            acc[j,:] -= pars.gN*rji/sum(rji**2)**(3/2) * marr[i]
+            # acc[i,:] += pars.gN*rji/sum(rji**2)**(3/2) * marr[j]
+            # acc[j,:] -= pars.gN*rji/sum(rji**2)**(3/2) * marr[i]
+            acc[i, :] += pars.gN*rji/(np.sqrt(sum(rji**2))*sum(rji**2))*marr[j]
+            acc[j, :] -= pars.gN*rji/(np.sqrt(sum(rji**2))*sum(rji**2))*marr[i]
 
     return acc
 

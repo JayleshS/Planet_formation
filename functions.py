@@ -1,4 +1,4 @@
-import numpy as np
+import numpy as np 
 import pars
 import matplotlib.pyplot as plt
 
@@ -20,21 +20,23 @@ def init_2body(ecc):
     varr[:, 1] = [0., vKep * np.sqrt((1-ecc)/(1+ecc)), 0.]
 
     return xarr, varr, marr
-'''
-def forces(xarr, varr, marr):
-    acc = np.zeros((3,pars.Np))
-    for i in range(pars.Np):
-        for j in range(i+1, pars.Np):
-            rji = xarr[:,j] - xarr[:,i]
-            r2 = sum(rji**2)
-            r1 = np.sqrt(r2)
-            r3 = r1*r2
 
-            force = pars.gN*rji/r3
-            acc[:,i] += force*marr[j]
-            acc[:,j] -= force*marr[i]
+# def forces(xarr, varr, marr):
+#     acc = np.zeros((3,pars.Np))
+#     for i in range(pars.Np):
+#         for j in range(i+1, pars.Np):
+#             rji = xarr[:,j] - xarr[:,i]
+#             r2 = sum(rji**2)
+#             r1 = np.sqrt(r2)
+#             r3 = r1*r2
 
-    return acc
+#             force = pars.gN*rji/r3
+#             acc[:,i] += force*marr[j]
+#             acc[:,j] -= force*marr[i]
+#             # acc[:,i] += pars.gN * (rji/(np.sqrt(sum(rji**2)) * sum(rji**2))) * marr[j]
+#             # acc[:,i] += pars.gN * (rji/(np.sqrt(sum(rji**2)) * sum(rji**2))) * marr[j]
+
+#     return acc
 
 
 
@@ -50,6 +52,20 @@ def e_tot(xarr, varr, marr):
             Epot += -(pars.gN*marr[i]*marr[j])/r1
     Etot = Ekin + Epot
     return Etot
+
+
+def forces(xarr, varr, marr):
+    acc = np.zeros((3,pars.Np))
+    for i in range(pars.Np):
+        for j in range(i+1, pars.Np):
+            rji = xarr[:,j] - xarr[:,i]
+
+            acc[:,i] += pars.gN*rji/(np.sqrt(sum(rji**2))*sum(rji**2))*marr[j]
+            acc[:,j] -= pars.gN*rji/(np.sqrt(sum(rji**2))*sum(rji**2))*marr[i]
+            # acc[:,i] += pars.gN*rji/(sum(rji**2)**(3/2)) * marr[j]
+            # acc[:,j] -= pars.gN*rji/(sum(rji**2)**(3/2)) * marr[i]
+
+    return acc
 '''
 def forces(xarr, varr, marr):
     acc = np.zeros((3,pars.Np))
@@ -59,6 +75,16 @@ def forces(xarr, varr, marr):
 
             acc[:,i] += pars.gN*rji/sum(rji**2)**(3/2) * marr[j]
             acc[:,j] -= pars.gN*rji/sum(rji**2)**(3/2) * marr[i]
+            # acc[:,i] += pars.gN * (rji/(np.sqrt(sum(rji**2)) * sum(rji**2))) * marr[j]
+            # acc[:,i] += pars.gN * (rji/(np.sqrt(sum(rji**2)) * sum(rji**2))) * marr[j]
+            # r2 = sum(rji**2)
+            # r1 = np.sqrt(r2)
+            # r3 = r1*r2
+
+            # acc[:, i] += pars.Np*(rji/r3)*marr[j]    # marr[j] = muEarth
+            # acc[:, j] -= pars.Np*(rji/r3)*marr[i]    # marr[i] = muSun
+
+
 
     return acc
 
@@ -72,3 +98,4 @@ def e_tot(xarr, varr, marr):
             Epot += -(pars.gN*marr[i]*marr[j]) / (np.sqrt(sum((xarr[:, j] - xarr[:, i]))**2))
     Etot = Ekin + Epot
     return Etot
+'''
