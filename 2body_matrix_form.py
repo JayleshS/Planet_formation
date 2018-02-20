@@ -17,14 +17,13 @@ def euler(dt, tfinal):
 	particles, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(particles, marr)
 	time = 0
+
 	while time < tfinal:
 		acc = fn.forces(particles, marr)
 		particles[:, 0, :] += particles[:, 1, :]*dt
 		particles[:, 1, :] += acc*dt
-		# print particles
 
 		x_and_v.append(particles.tolist())
-
 		time += dt
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
@@ -99,7 +98,7 @@ def plottest(particles):
 def main():
 	# print dt
 	xv, error = euler(dt, tfinal)
-	plottest(xv)
+	# plottest(xv)
 	# print xv
 
 if __name__ == '__main__':
