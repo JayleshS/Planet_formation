@@ -38,12 +38,12 @@ def midpoint(dt, tfinal):
 	while time < tfinal:
 		acc = fn.forces(particles, marr)
 		particles_mid = np.zeros((pars.Np, 2, 3))
-		particles_mid[:, 0, :] = particles[:,0,:] + particles[:,1,:] * dt / 2
-		particles_mid[:, 1, :] = particles[:,1,:] + acc * dt / 2
+		particles_mid[:, 0, :] = particles[:, 0, :] + particles[:, 1, :] * dt / 2
+		particles_mid[:, 1, :] = particles[:, 1, :] + acc * dt / 2
 
 		amid = fn.forces(particles_mid, marr)
 		particles[:, 0, :] += particles_mid[:, 1, :] * dt
-		particles[:,1,:] += amid * dt
+		particles[:, 1, :] += amid * dt
 
 		# x_and_v.append(particles.tolist())
 
@@ -74,6 +74,36 @@ def leapfrog(dt, tfinal):
 
 	return e_error #x_and_v, e_error
 
+
+def hermite(dt, tfinal):
+	particles, marr = fn.init_2body(0)
+	etot0 = fn.e_tot(particles, marr)
+	time = 0
+	iterations = 2
+
+	while time < tfinal:
+		acc, jerk = fn.forces_hermite(particles, marr)
+
+		old_x = np.copy(particles[:, 0, :])
+		old_v = np.copy(particles[:, 1, :])
+		old_acc = np.copy(acc)
+		old_jerk = np.copy(jerk)
+
+		particles[:, 0, :] += particles[:, 1, :] + acc * dt**2 / 2 + jerk * dt**3 / 6
+		particles[:, 1, :] += acc * dt + jerk * dt**2 / 2
+		for i in range(iterations):
+			varr = old_v + (old_a + acc)*dt/2 + ((old_j - jerk)*dt**2)/12
+			xarr = old_x + (old_v + particles[:, 1, :])*dt/2 + ((alpha/10)*((old_a - acc)*dt**2)) + ((6*alpha - 5)/120)*(old_j + jerk)*dt**3
+
+	pass
+
+
+def plot(x1_val, y1_val, x2_val, y2_val):
+	# plt.plot(x1_val, y1_val)
+	# plt.plot(x2_val, y2_val)
+	# print x2_val
+	# plt.show()
+	pass
 
 def plottest(particles):
 	'''
