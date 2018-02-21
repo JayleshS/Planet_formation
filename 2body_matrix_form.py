@@ -23,11 +23,12 @@ def euler(dt, tfinal):
 		particles[:, 0, :] += particles[:, 1, :]*dt
 		particles[:, 1, :] += acc*dt
 
-		# x_and_v.append(particles.tolist())
+		x_and_v.append(particles.tolist())
+
 		time += dt
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
-	return e_error#x_and_v, e_error
+	return x_and_v, e_error
 
 
 def midpoint(dt, tfinal):
@@ -45,14 +46,14 @@ def midpoint(dt, tfinal):
 		particles[:, 0, :] += particles_mid[:, 1, :] * dt
 		particles[:, 1, :] += amid * dt
 
-		# x_and_v.append(particles.tolist())
+		x_and_v.append(particles.tolist())
 
 		time += dt
 
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
 
-	return e_error #x_and_v, e_error
+	return x_and_v, e_error
 
 def leapfrog(dt, tfinal):
 	particles, marr = fn.init_2body(0)
@@ -66,13 +67,13 @@ def leapfrog(dt, tfinal):
 		acc   = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
 
-		# x_and_v.append(particles.tolist())
+		x_and_v.append(particles.tolist())
 
 		time += dt
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
 
-	return e_error #x_and_v, e_error
+	return x_and_v, e_error
 
 
 def hermite(dt, tfinal):
@@ -89,13 +90,16 @@ def hermite(dt, tfinal):
 		old_acc = np.copy(acc)
 		old_jerk = np.copy(jerk)
 
-		particles[:, 0, :] += particles[:, 1, :] + acc * dt**2 / 2 + jerk * dt**3 / 6
+		particles[:, 0, :] += particles[:, 1, :] * dt + acc * dt**2 / 2 + jerk * dt**3 / 6
 		particles[:, 1, :] += acc * dt + jerk * dt**2 / 2
 		for i in range(iterations):
-			varr = old_v + (old_a + acc)*dt/2 + ((old_j - jerk)*dt**2)/12
-			xarr = old_x + (old_v + particles[:, 1, :])*dt/2 + ((alpha/10)*((old_a - acc)*dt**2)) + ((6*alpha - 5)/120)*(old_j + jerk)*dt**3
+			particles[:, 1, :] = old_v + (old_a + acc)*dt/2 + ((old_j - jerk)* dt**2 )/12
+			particles[:, 0, :] = old_x + (old_v + particles[:, 1, :])*dt/2 + ((alpha/10)*((old_a - acc)*dt**2)) + ((6*alpha - 5)/120)*(old_j + jerk)*dt**3
+		x_and_v.append(particles.tolist())
 
-	pass
+	return x_and_v
+
+hermite(1, 10)	
 
 
 def plot(x1_val, y1_val, x2_val, y2_val):
@@ -125,25 +129,31 @@ def plot_error(timestep, error1, error2, error3):
 	plt.show()
 
 
+print 'euler_forward: \n',euler(1,10)[0]
+
+print 'euler_forward: \n',euler(1,10)[0]
+
+
+
 def main():
 	# print dt
 	# error_euler = []
 	# error_midpoint = []
 	# error_leapfrog =[]
-	timestep=[1e-2, 1e-3, 1e-4, 1e-5,1e-6]
+	timestep=[1e-2]
 	# for t in timestep:
-	#
-	# 	# print 'error euler forward    ' +str(timestep)+': ', euler   (timestep * pars.yr ,1e8)[1]
-	# 	# print 'error midpoint forward ' +str(timestep)+': ', midpoint(timestep * pars.yr ,1e8)[1]
-	# 	# print 'error leapfrog forward ' +str(timestep)+': ', leapfrog(timestep * pars.yr ,1e8)[1]
+
+		# print 'error euler forward    ' +str(t)+': ', euler   (t * pars.yr ,10)
+	# 	# print 'error midpoint forward ' +str(t)+': ', midpoint(t * pars.yr ,1e8)[1]
+	# 	# print 'error leapfrog forward ' +str(t)+': ', leapfrog(t * pars.yr ,1e8)[1]
 	# 	error_euler.append(euler   (t * pars.yr ,1e8).tolist())
 	# 	error_midpoint.append(midpoint   (t * pars.yr ,1e8).tolist())
 	# 	error_leapfrog.append(leapfrog   (t * pars.yr ,1e8).tolist())
 
-	print 'error_euler: ', error_euler
-	print 'error_midpoint: ', error_midpoint
-	print 'error_leapfrog: ', error_leapfrog
-	plot_error(timestep, error_euler, error_midpoint, error_leapfrog)
+	# print 'error_euler: ', error_euler
+	# print 'error_midpoint: ', error_midpoint
+	# print 'error_leapfrog: ', error_leapfrog
+	# plot_error(timestep, error_euler, error_midpoint, error_leapfrog)
 
 
 	# pos_leapfrog, error_leapfrog = leapfrog(dt, tfinal)
