@@ -74,10 +74,10 @@ def leapfrog(dt, tfinal):
 	return particles
 
 def plot(x1_val, y1_val, x2_val, y2_val):
-	plt.plot(x1_val, y1_val)
-	plt.plot(x2_val, y2_val)
-	print x2_val
-	plt.show()
+	# plt.plot(x1_val, y1_val)
+	# plt.plot(x2_val, y2_val)
+	# print x2_val
+	# plt.show()
 	pass
 
 def plottest(particles):
@@ -97,8 +97,8 @@ def plottest(particles):
 
 def main():
 	# print dt
-	xv, error = euler(dt, tfinal)
-	# plottest(xv)
+	pos_euler, error_euler = euler(dt, tfinal)
+	plottest(pos_euler)
 	# print xv
 
 if __name__ == '__main__':
