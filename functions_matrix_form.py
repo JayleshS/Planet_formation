@@ -97,12 +97,14 @@ def forces(particles, marr):
 
     return acc
 
+print forces(*init_2body(0.0))
+
 def e_tot(particles, marr):
     Ekin = 0
     Epot = 0
     for i in range(pars.Np):
         Ekin += 0.5*marr[i]*sum(particles[i,1,:]**2)
         for j in range(i+1, pars.Np):
-            Epot += -(pars.gN*marr[i]*marr[j]) / (np.sqrt(sum((particles[j,0,:] - particles[i,0,:]))**2))
+            Epot += -(pars.gN*marr[i]*marr[j]) / (np.sqrt(sum((particles[j,0,:] - particles[i,0,:])**2)))
     Etot = Ekin + Epot
     return Etot

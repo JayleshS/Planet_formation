@@ -7,11 +7,11 @@ import matplotlib.pyplot as plt
 # xarr, varr, marr = fn.init_2body(0)
 # etot0 = fn.e_tot(xarr, varr, marr)
 
-tfinal = 2.5*pars.yr
-dt = 0.001*pars.yr
+
 # etot0 = fn.e_tot(xarr, varr, marr)
 
 x_and_v =[]
+
 
 def euler(dt, tfinal):
 	particles, marr = fn.init_2body(0)
@@ -23,11 +23,11 @@ def euler(dt, tfinal):
 		particles[:, 0, :] += particles[:, 1, :]*dt
 		particles[:, 1, :] += acc*dt
 
-		x_and_v.append(particles.tolist())
+		# x_and_v.append(particles.tolist())
 		time += dt
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
-	return x_and_v, e_error
+	return e_error#x_and_v, e_error
 
 
 def midpoint(dt, tfinal):
@@ -45,15 +45,14 @@ def midpoint(dt, tfinal):
 		particles[:, 0, :] += particles_mid[:, 1, :] * dt
 		particles[:,1,:] += amid * dt
 
-		x_and_v.append(particles.tolist())
+		# x_and_v.append(particles.tolist())
 
 		time += dt
 
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
-	print 'dag'
 
-	return particles, e_error
+	return e_error #x_and_v, e_error
 
 def leapfrog(dt, tfinal):
 	particles, marr = fn.init_2body(0)
@@ -65,20 +64,16 @@ def leapfrog(dt, tfinal):
 		particles[:,1,:] += acc* dt/2
 		particles[:,0,:] += particles[:,1,:]*dt
 		acc   = fn.forces(particles, marr)
-		partciles[:,1,:] += acc* dt/2
+		particles[:,1,:] += acc* dt/2
+
+		# x_and_v.append(particles.tolist())
 
 		time += dt
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
 
-	return particles
+	return e_error #x_and_v, e_error
 
-def plot(x1_val, y1_val, x2_val, y2_val):
-	# plt.plot(x1_val, y1_val)
-	# plt.plot(x2_val, y2_val)
-	# print x2_val
-	# plt.show()
-	pass
 
 def plottest(particles):
 	'''
@@ -89,16 +84,41 @@ def plottest(particles):
 		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1])
 	plt.show()
 
+def plot_error(timestep, error1, error2, error3):
+	plt.plot(timestep, np.abs(error1), label = 'Euler foward')
+	plt.plot(timestep, np.abs(error2), label = 'midpoint')
+	plt.plot(timestep, np.abs(error3), label = 'leapfrog')
 
-
-
-
+	plt.legend()
+	plt.yscale("log")
+	plt.xscale("log")
+	plt.show()
 
 
 def main():
 	# print dt
-	pos_euler, error_euler = euler(dt, tfinal)
-	plottest(pos_euler)
+	# error_euler = []
+	# error_midpoint = []
+	# error_leapfrog =[]
+	timestep=[1e-2, 1e-3, 1e-4, 1e-5,1e-6]
+	# for t in timestep:
+	#
+	# 	# print 'error euler forward    ' +str(timestep)+': ', euler   (timestep * pars.yr ,1e8)[1]
+	# 	# print 'error midpoint forward ' +str(timestep)+': ', midpoint(timestep * pars.yr ,1e8)[1]
+	# 	# print 'error leapfrog forward ' +str(timestep)+': ', leapfrog(timestep * pars.yr ,1e8)[1]
+	# 	error_euler.append(euler   (t * pars.yr ,1e8).tolist())
+	# 	error_midpoint.append(midpoint   (t * pars.yr ,1e8).tolist())
+	# 	error_leapfrog.append(leapfrog   (t * pars.yr ,1e8).tolist())
+
+	print 'error_euler: ', error_euler
+	print 'error_midpoint: ', error_midpoint
+	print 'error_leapfrog: ', error_leapfrog
+	plot_error(timestep, error_euler, error_midpoint, error_leapfrog)
+
+
+	# pos_leapfrog, error_leapfrog = leapfrog(dt, tfinal)
+	# plottest(pos_leapfrog)
+	# print 'error leapfrog =' ,error_leapfrog
 	# print xv
 
 if __name__ == '__main__':
