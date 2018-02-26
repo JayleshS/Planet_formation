@@ -80,14 +80,15 @@ def hermite(dt, tfinal):
 	etot0 = fn.e_tot(particles, marr)
 	time = 0
 	iterations = 2
+	alpha = 7/6.
 
 	while time < tfinal:
 		acc, jerk = fn.forces_hermite(particles, marr)
 
 		old_x = np.copy(particles[:, 0, :])
 		old_v = np.copy(particles[:, 1, :])
-		old_acc = np.copy(acc)
-		old_jerk = np.copy(jerk)
+		old_a = np.copy(acc)
+		old_j = np.copy(jerk)
 
 		particles[:, 0, :] += particles[:, 1, :] + acc * dt**2 / 2 + jerk * dt**3 / 6
 		particles[:, 1, :] += acc * dt + jerk * dt**2 / 2
@@ -95,7 +96,11 @@ def hermite(dt, tfinal):
 			varr = old_v + (old_a + acc)*dt/2 + ((old_j - jerk)*dt**2)/12
 			xarr = old_x + (old_v + particles[:, 1, :])*dt/2 + ((alpha/10)*((old_a - acc)*dt**2)) + ((6*alpha - 5)/120)*(old_j + jerk)*dt**3
 
-	pass
+		x_and_v.append(particles.tolist())
+
+		etot1 = fn.e_tot(particles, marr)
+		e_error = (etot1 - etot0) / etot0
+		return e_error, x_and_v
 
 
 def plot(x1_val, y1_val, x2_val, y2_val):
@@ -126,11 +131,12 @@ def plot_error(timestep, error1, error2, error3):
 
 
 def main():
-	# print dt
+	error_hermite, pos_hermite = hermite(0.01*pars.yr, 3e8)
+	plottest(pos_hermite)
 	# error_euler = []
 	# error_midpoint = []
 	# error_leapfrog =[]
-	timestep=[1e-2, 1e-3, 1e-4, 1e-5,1e-6]
+	# timestep=[1e-2, 1e-3, 1e-4, 1e-5,1e-6]
 	# for t in timestep:
 	#
 	# 	# print 'error euler forward    ' +str(timestep)+': ', euler   (timestep * pars.yr ,1e8)[1]
@@ -140,10 +146,10 @@ def main():
 	# 	error_midpoint.append(midpoint   (t * pars.yr ,1e8).tolist())
 	# 	error_leapfrog.append(leapfrog   (t * pars.yr ,1e8).tolist())
 
-	print 'error_euler: ', error_euler
-	print 'error_midpoint: ', error_midpoint
-	print 'error_leapfrog: ', error_leapfrog
-	plot_error(timestep, error_euler, error_midpoint, error_leapfrog)
+	# print 'error_euler: ', error_euler
+	# print 'error_midpoint: ', error_midpoint
+	# print 'error_leapfrog: ', error_leapfrog
+	# plot_error(timestep, error_euler, error_midpoint, error_leapfrog)
 
 
 	# pos_leapfrog, error_leapfrog = leapfrog(dt, tfinal)
