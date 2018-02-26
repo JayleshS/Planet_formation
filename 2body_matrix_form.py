@@ -83,6 +83,7 @@ def hermite(dt, tfinal):
 	alpha = 7/6.
 
 	while time < tfinal:
+		print 'time =', time/pars.yr
 		acc, jerk = fn.forces_hermite(particles, marr)
 
 		old_x = np.copy(particles[:, 0, :])
@@ -97,6 +98,7 @@ def hermite(dt, tfinal):
 			xarr = old_x + (old_v + particles[:, 1, :])*dt/2 + ((alpha/10)*((old_a - acc)*dt**2)) + ((6*alpha - 5)/120)*(old_j + jerk)*dt**3
 
 		x_and_v.append(particles.tolist())
+		print particles
 
 		etot1 = fn.e_tot(particles, marr)
 		e_error = (etot1 - etot0) / etot0
@@ -131,7 +133,7 @@ def plot_error(timestep, error1, error2, error3):
 
 
 def main():
-	error_hermite, pos_hermite = hermite(0.01*pars.yr, 0.03*pars.yr)
+	error_hermite, pos_hermite = hermite(0.001*pars.yr, 3e8)
 	# plottest(pos_hermite)
 	# error_euler = []
 	# error_midpoint = []

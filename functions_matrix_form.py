@@ -102,12 +102,12 @@ def forces_hermite(particles, marr):
     acc = np.zeros((pars.Np, 3))
     jer = np.zeros((pars.Np, 3))
     for i in range(pars.Np):
-        for j in range(pars.Np):
+        for j in range(i+1, pars.Np):
             rji = particles[j, 0, :] - particles[i, 0, :]
             vji = particles[j, 1, :] - particles[i, 1, :]
 
             r2 = sum(rji**2)
-            print 'r2 = ', r2
+            # print 'r2 =', r2
             r1 = np.sqrt(r2)
             r3 = r1 * r2
             rv = sum(rji * vji)
@@ -119,6 +119,7 @@ def forces_hermite(particles, marr):
             jerk = (vji - 3 * rv * rji) / r3
             jer[i, :] += pars.gN * jerk * marr[j]
             jer[i, :] -= pars.gN * jerk * marr[i]
+            # print acc
 
     return acc, jer
 
