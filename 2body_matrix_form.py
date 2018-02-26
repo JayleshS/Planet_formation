@@ -79,7 +79,7 @@ def hermite(dt, tfinal):
 	particles, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(particles, marr)
 	time = 0
-	iterations = 2
+	iterations = 1
 	alpha = 7/6.
 
 	while time < tfinal:
@@ -92,9 +92,10 @@ def hermite(dt, tfinal):
 
 		particles[:, 0, :] += particles[:, 1, :] * dt + acc * dt**2 / 2 + jerk * dt**3 / 6
 		particles[:, 1, :] += acc * dt + jerk * dt**2 / 2
-		for i in range(iterations):
-			varr = old_v + (old_a + acc)*dt/2 + ((old_j - jerk)*dt**2)/12
-			xarr = old_x + (old_v + particles[:, 1, :])*dt/2 + ((alpha/10)*((old_a - acc)*dt**2)) + ((6*alpha - 5)/120)*(old_j + jerk)*dt**3
+		# for i in range(iterations):
+		particles[:, 1, :] = old_v + (old_a + acc)*dt/2 + ((old_j - jerk)*dt**2)/12
+		particles[:, 0, :] = old_x + (old_v + particles[:, 1, :])*dt/2 + ((old_a - acc)*dt**2)/12
+			# particles[:, 0, :] = old_x + (old_v + particles[:, 1, :])*dt/2 + ((alpha/10)*((old_a - acc)*dt**2)) + ((6*alpha - 5)/120)*(old_j + jerk)*dt**3
 
 		x_and_v.append(particles.tolist())
 
