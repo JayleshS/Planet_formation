@@ -80,7 +80,7 @@ def hermite(dt, tfinal):
 	particles, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(particles, marr)
 	time = 0
-	iterations = 2
+	iterations = 1
 	alpha = 7/6.
 
 	while time < tfinal:
@@ -93,15 +93,25 @@ def hermite(dt, tfinal):
 
 		particles[:, 0, :] += particles[:, 1, :] * dt + acc * dt**2 / 2 + jerk * dt**3 / 6
 		particles[:, 1, :] += acc * dt + jerk * dt**2 / 2
+<<<<<<< HEAD
 		for i in range(iterations):
 			particles[:, 1, :] = old_v + (old_a + acc)*dt/2 + ((old_j - jerk)* dt**2 )/12
 			particles[:, 0, :] = old_x + (old_v + particles[:, 1, :])*dt/2 + ((alpha/10)*((old_a - acc)*dt**2)) + ((6*alpha - 5)/120)*(old_j + jerk)*dt**3
+=======
+		# for i in range(iterations):
+		particles[:, 1, :] = old_v + (old_a + acc)*dt/2 + ((old_j - jerk)*dt**2)/12
+		particles[:, 0, :] = old_x + (old_v + particles[:, 1, :])*dt/2 + ((old_a - acc)*dt**2)/12
+			# particles[:, 0, :] = old_x + (old_v + particles[:, 1, :])*dt/2 + ((alpha/10)*((old_a - acc)*dt**2)) + ((6*alpha - 5)/120)*(old_j + jerk)*dt**3
+>>>>>>> cb7ff2e88756ef7cf479092b584872c1041916fb
 
 		x_and_v.append(particles.tolist())
 
-		etot1 = fn.e_tot(particles, marr)
-		e_error = (etot1 - etot0) / etot0
-		return e_error, x_and_v
+		time += dt
+
+	etot1 = fn.e_tot(particles, marr)
+	e_error = (etot1 - etot0) / etot0
+
+	return e_error, x_and_v
 
 
 def plot(x1_val, y1_val, x2_val, y2_val):
@@ -140,8 +150,13 @@ print 'euler_forward: \n',euler(1,10)[0]
 
 
 def main():
+<<<<<<< HEAD
 	error_hermite, pos_hermite = hermite(0.1*pars.yr, 0.1)
+=======
+	error_hermite, pos_hermite = hermite(0.0001*pars.yr, 3*pars.yr)
+>>>>>>> cb7ff2e88756ef7cf479092b584872c1041916fb
 	plottest(pos_hermite)
+	print error_hermite
 	# error_euler = []
 	# error_midpoint = []
 	# error_leapfrog =[]
