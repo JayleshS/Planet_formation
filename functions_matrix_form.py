@@ -107,6 +107,7 @@ def forces_hermite(particles, marr):
             vji = particles[j, 1, :] - particles[i, 1, :]
 
             r2 = sum(rji**2)
+            print 'r2 = ', r2
             r1 = np.sqrt(r2)
             r3 = r1 * r2
             rv = sum(rji * vji)

@@ -90,7 +90,7 @@ def hermite(dt, tfinal):
 		old_a = np.copy(acc)
 		old_j = np.copy(jerk)
 
-		particles[:, 0, :] += particles[:, 1, :] + acc * dt**2 / 2 + jerk * dt**3 / 6
+		particles[:, 0, :] += particles[:, 1, :] * dt + acc * dt**2 / 2 + jerk * dt**3 / 6
 		particles[:, 1, :] += acc * dt + jerk * dt**2 / 2
 		for i in range(iterations):
 			varr = old_v + (old_a + acc)*dt/2 + ((old_j - jerk)*dt**2)/12
@@ -131,8 +131,8 @@ def plot_error(timestep, error1, error2, error3):
 
 
 def main():
-	error_hermite, pos_hermite = hermite(0.01*pars.yr, 3e8)
-	plottest(pos_hermite)
+	error_hermite, pos_hermite = hermite(0.01*pars.yr, 0.03*pars.yr)
+	# plottest(pos_hermite)
 	# error_euler = []
 	# error_midpoint = []
 	# error_leapfrog =[]
