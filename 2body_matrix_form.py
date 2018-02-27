@@ -92,10 +92,11 @@ def hermite(dt, tfinal):
 		old_j = np.copy(jerk)
 
 		''''check to see if dividing gives problems!'''
-		particles[:, 1, :] += acc                * dt + jerk * dt**2 / 2
 		particles[:, 0, :] += particles[:, 1, :] * dt + acc  * dt**2 / 2 + jerk * dt**3 / 6
+		particles[:, 1, :] += acc                * dt + jerk * dt**2 / 2
 
 		# for i in range(iterations):
+		acc, jerk = fn.forces_hermite(particles, marr)
 		particles[:, 1, :] = old_v + (old_a + acc               ) * dt/2 + ((old_j - jerk)*dt**2)/12
 		particles[:, 0, :] = old_x + (old_v + particles[:, 1, :]) * dt/2 + ((old_a - acc )*dt**2)/12
 		# particles[:, 0, :] = old_x + (old_v + particles[:, 1, :])*dt/2 + ((alpha/10)*((old_a - acc)*dt**2)) + ((6*alpha - 5)/120)*(old_j + jerk)*dt**3
@@ -146,21 +147,15 @@ def plot_error(timestep, error1, error2):
 
 def main():
 
-	# error_hermite, pos_hermite = hermite(dt, 30*pars.yr)
-
+	pos_hermite, error_hermite = hermite(0.001*pars.yr, 0.003*pars.yr)
+	print error_hermite
 	# plottest(pos_hermite)
 
 	# error_euler = []
 	# error_midpoint = []
 	error_leapfrog = []
 	error_hermite = []
-
-	plottest(leapfrog(1e-2*pars.yr, 10*pars.yr)[0], plotlabel=1e-2)
-
-	plottest(leapfrog(1e-3*pars.yr, 10*pars.yr)[0], plotlabel=1e-3)
-	plottest(leapfrog(1e-4*pars.yr, 10*pars.yr)[0], plotlabel=1e-4)
-
-	# timestep=[1e-2, 1e-3, 1e-4]
+	timestep=[1e-2, 1e-3, 1e-4, 1e-5]
 	# for t in timestep:
 		# error_hermite, pos_hermite = hermite(t, 30*pars.yr)
 
@@ -170,7 +165,6 @@ def main():
 		# error_hermite.append (hermite (t*pars.yr, 10*pars.yr)[1])
 
 		# error_leapfrog.append(leapfrog(t*pars.yr, 10*pars.yr)[1])
-		# plottest(hermite(t*pars.yr, 10*pars.yr)[0], plotlabel=str(t))
 		# error_midpoint.append(midpoint   (t * pars.yr ,1e8).tolist())
 		# error_leapfrog.append(leapfrog   (t * pars.yr ,1e8).tolist())
 
