@@ -116,20 +116,24 @@ def plot(x1_val, y1_val, x2_val, y2_val):
 	# plt.show()
 	pass
 
-def plottest(particles):
+def plottest(particles, plotlabel="plotlabel"):
 	'''
 	Plots list (t, Np, 2, 3)
 	'''
 	xarr = np.array(particles)
 	for planet in range(pars.Np):
-		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1])
-
+		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1],label=str(plotlabel))
+	plt.legend()
 	plt.show()
 
-def plot_error(timestep, error1, error2):
-	plt.plot(timestep, np.abs(error1), label = 'hermite')
-	plt.plot(timestep, np.abs(error2), label = 'leapfrog')
-	# plt.plot(timestep, np.abs(error3), label = 'leapfrog')
+	plot_error(timestep, error_euler, error_midpoint, error_leapfrog, error_hermite)
+
+def plot_error(timestep, error1, error2, error3, error4):
+	plt.plot(timestep, np.abs(error1), label = 'euler_forward')
+	plt.plot(timestep, np.abs(error2), label = 'midpoint')
+	plt.plot(timestep, np.abs(error3), label = 'leapfrog')
+	plt.plot(timestep, np.abs(error4), label = 'hermite')
+
 	plt.title('timestep = ' + str(timestep))
 	plt.legend()
 	plt.yscale("log")
@@ -144,32 +148,32 @@ def plot_error(timestep, error1, error2):
 
 
 def main():
-
-	pos_hermite, error_hermite = hermite(0.001*pars.yr, 50*pars.yr)
+	pos_hermite, error_hermite = hermite(0.001*pars.yr, 3*pars.yr)
 	print error_hermite
 	plottest(pos_hermite)
 
-	# error_euler = []
-	# error_midpoint = []
+	error_euler    = []
+	error_midpoint = []
 	error_leapfrog = []
-	error_hermite = []
-	timestep=[1e-2, 1e-3, 1e-4, 1e-5]
-	# for t in timestep:
+	error_hermite  = []
+
+	timestep=[1e-2, 1e-3, 1e-4]
+	for t in timestep:
 		# error_hermite, pos_hermite = hermite(t, 30*pars.yr)
 
 		# print 'error euler forward    ' +str(t)+': ', euler   (t * pars.yr ,10)
 		# print 'error midpoint forward ' +str(t)+': ', midpoint(t * pars.yr ,1e8)[1]
 		# print 'error leapfrog forward ' +str(t)+': ', leapfrog(t * pars.yr ,1e8)[1]
-		# error_hermite.append (hermite (t*pars.yr, 10*pars.yr)[1])
 
-		# error_leapfrog.append(leapfrog(t*pars.yr, 10*pars.yr)[1])
-		# error_midpoint.append(midpoint   (t * pars.yr ,1e8).tolist())
-		# error_leapfrog.append(leapfrog   (t * pars.yr ,1e8).tolist())
+		error_euler.append(euler       (t * pars.yr, 3*pars.yr )[1])
+		error_midpoint.append(midpoint (t * pars.yr, 3*pars.yr )[1])
+		error_leapfrog.append(leapfrog (t * pars.yr, 3*pars.yr )[1])
+		error_hermite.append (hermite  (t * pars.yr, 3*pars.yr )[1])
 
 	# print 'error_euler: ', error_euler
 	# print 'error_midpoint: ', error_midpoint
 	# print 'error_leapfrog: ', error_leapfrog
-	# plot_error(timestep, error_hermite, error_leapfrog)
+	plot_error(timestep, error_euler, error_midpoint, error_leapfrog, error_hermite)
 
 
 	# pos_leapfrog, error_leapfrog = leapfrog(dt, tfinal)
