@@ -123,6 +123,26 @@ def forces_hermite(particles, marr):
 
     return acc, jer
 
+def forces_migration(particles, marr):
+    acc = np.zeros(3)
+    rji = particles[1, 0, :] - particles[0, 0, :]
+    vji = particles[1, 1, :] - particles[0, 1, :]
+
+    # Convert to cylindrical coordinates
+    rad = np.sqrt(rji[0]**2 + rji[1]**2)
+    theta = np.arctan2(rji[1], rji[0])
+
+
+    vKep = sqrt((marr[0] + marr[1]) / rad)
+    F_mig = (vKep/rad) * vKep
+
+    acc[0] = -F_mig * np.sin(theta)
+    acc[1] = F_mig * np.cos(theta)
+
+    return acc
+
+
+
 def e_tot(particles, marr):
     Ekin = 0
     Epot = 0
