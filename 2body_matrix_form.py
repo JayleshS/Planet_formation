@@ -80,8 +80,7 @@ def hermite(dt, tfinal):
 	particles, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(particles, marr)
 	time = 0
-	iterations = 1
-	alpha = 7/6.
+	iterations = 2
 
 	while time < tfinal:
 		acc, jerk = fn.forces_hermite(particles, marr)
@@ -95,11 +94,10 @@ def hermite(dt, tfinal):
 		particles[:, 0, :] += particles[:, 1, :] * dt + acc  * dt**2 / 2 + jerk * dt**3 / 6
 		particles[:, 1, :] += acc                * dt + jerk * dt**2 / 2
 
-		# for i in range(iterations):
-		acc, jerk = fn.forces_hermite(particles, marr)
-		particles[:, 1, :] = old_v + (old_a + acc               ) * dt/2 + ((old_j - jerk)*dt**2)/12
-		particles[:, 0, :] = old_x + (old_v + particles[:, 1, :]) * dt/2 + ((old_a - acc )*dt**2)/12
-		# particles[:, 0, :] = old_x + (old_v + particles[:, 1, :])*dt/2 + ((alpha/10)*((old_a - acc)*dt**2)) + ((6*alpha - 5)/120)*(old_j + jerk)*dt**3
+		for i in range(iterations):
+			acc, jerk = fn.forces_hermite(particles, marr)
+			particles[:, 1, :] = old_v + (old_a + acc               ) * dt/2 + ((old_j - jerk)*dt**2)/12
+			particles[:, 0, :] = old_x + (old_v + particles[:, 1, :]) * dt/2 + ((old_a - acc )*dt**2)/12
 
 		x_and_v.append(particles.tolist())
 
@@ -147,9 +145,9 @@ def plot_error(timestep, error1, error2):
 
 def main():
 
-	pos_hermite, error_hermite = hermite(0.001*pars.yr, 0.003*pars.yr)
+	pos_hermite, error_hermite = hermite(0.001*pars.yr, 50*pars.yr)
 	print error_hermite
-	# plottest(pos_hermite)
+	plottest(pos_hermite)
 
 	# error_euler = []
 	# error_midpoint = []
