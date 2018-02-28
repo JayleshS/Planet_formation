@@ -103,6 +103,8 @@ def hermite(dt, tfinal):
 			particles[:, 0, :] = old_x + (old_v + particles[:, 1, :]) * dt/2 + ((old_a - acc )*dt**2)/12
 
 		x_and_v.append(particles.tolist())
+		e, a = fn.get_orbital_elements(particles, marr)
+		ecc.append
 
 		time += dt
 

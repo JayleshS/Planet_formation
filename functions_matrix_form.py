@@ -133,7 +133,7 @@ def forces_migration(particles, marr):
     theta = np.arctan2(rji[1], rji[0])
 
 
-    vKep = np.sqrt((marr[0] + marr[1]) / rad)
+    vKep = np.sqrt(pars.Np*(marr[0] + marr[1]) / rad)
     F_mig = (vKep/rad) * vKep
 
 
@@ -154,3 +154,34 @@ def e_tot(particles, marr):
             Epot += -(pars.gN*marr[i]*marr[j]) / (np.sqrt(sum((particles[j,0,:] - particles[i,0,:])**2)))
     Etot = Ekin + Epot
     return Etot
+
+
+def get_orbital_elements(particles, marr):
+    ang = zeros((pars.Np, 3))
+    n = zeros(3)
+    for i in range(pars.Np):
+        for j in range(i+1, pars.Np):
+            rji = particles[j, 0 ,:] - particles[i, 0, :]
+            vji = particles[j, 1 ,:] - particles[i, 1, :]
+            r1 = np.sqrt(sum(rji**2))
+            
+
+            ang[:, j] += np.cross(rji, vji)
+            ang[:, i] += np.cross(rji, vji)
+
+            lz = ang[2, 1]
+            inc = np.arccos(lz/np.sqrt(sum(ang[:, 1]**2)))
+
+            e = (np.cross(vji, ang[:, 1])/sum(marr)) - (rji/r1)
+
+            a = (sum(ang[:, 1]**2))/(sum(marr)*(1-sum(e**2)))
+
+            n = np.cross([0, 0, 1], ang[:, 1])
+            if np.sqrt(sum(n**2)) == 0:
+                n = np.array([1, 0, 0])
+
+            o_node = np.arccos(n[0]/np.sqrt(sum(n**2)))
+
+            omega = np.arccos(dot(n, e)/(np.sqrt(sum(n**2))*np.sqrt(sum(e**2))))
+
+    return e, a
