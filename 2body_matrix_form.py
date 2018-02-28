@@ -129,7 +129,7 @@ def leapfrog_drag(dt, tfinal):
 
 		grav   = fn.forces(particles, marr)[1]
 		drag = fn.forces_migration(particles, marr)
-		acc = grav + drag
+		acc = grav + drag*5e-9
 
 		particles[1,1,:] += acc* dt/2
 		particles[1,0,:] += particles[1,1,:]*dt
@@ -155,7 +155,7 @@ def plot(particles):
 	xarr = np.array(particles)
 	for planet in range(pars.Np):
 		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1])
-	plt.plot(xarr[:, planet, 0, 0][0:1000], xarr[:, planet, 0, 1][0:1000], c='r', label="Initial orbit")
+	plt.plot(xarr[:, planet, 0, 0][0:1100], xarr[:, planet, 0, 1][0:1100], c='r', label="Initial orbit")
 
 	plt.legend()
 	plt.xlabel('$x_{pos}$[cm]')
@@ -197,7 +197,7 @@ def main():
 	# pos_hermite, error_hermite = hermite(0.001*pars.yr, 3*pars.yr)
 	# print error_hermite
 	# plot(pos_hermite)
- 	plot( leapfrog_drag( 0.001*pars.yr, 40 * pars.yr)[0] )
+ 	plot( leapfrog_drag( 0.001*pars.yr, 30 * pars.yr)[0] )
 
 	error_euler    = []
 	error_midpoint = []
