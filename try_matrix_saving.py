@@ -16,3 +16,19 @@ while i < 5.:
 print 'save_list: ',save_list
 
 print type(matrix)
+
+
+
+posi = np.array([[1,2,3],[4,5,6]])
+velo = 12*np.array([[1,2,3],[4,5,6]])
+
+
+print posi
+print velo
+
+print np.cross(posi, velo)
+
+
+x = np.array([[1,2,3], [4,5,6], [7, 8, 9]])
+y = np.array([[7, 8, 9], [4,5,6], [1,2,3]])
+print np.cross(x, y)

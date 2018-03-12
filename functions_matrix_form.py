@@ -134,7 +134,7 @@ def forces_migration(particles, marr):
 
 
     vKep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
-    F_mig = -(vKep/rad) * vKep
+    F_mig = -(vKep/rad) #* vKep
 
     acc[0] = -F_mig * np.cos(theta)
     acc[1] = F_mig * np.sin(theta)
@@ -165,7 +165,6 @@ def get_orbital_elements(particles, marr):
     r1 = np.sqrt(sum(rji**2))
 
     ang[1, :] += np.cross(rji, vji)
-
     lz = ang[1, 2]
     inc = np.arccos(lz / np.sqrt(sum(ang[1, :]**2)))
 
@@ -174,3 +173,4 @@ def get_orbital_elements(particles, marr):
     a = (sum(ang[1, :]**2))/(pars.gN*sum(marr)*(1-sum(e**2)))
 
     return e, a
+
