@@ -165,16 +165,16 @@ def get_orbital_elements(particles, marr):
             vji = particles[j, 1 ,:] - particles[i, 1, :]
             r1 = np.sqrt(sum(rji**2))
 
-
-            ang[j, :] += np.cross(rji, vji)
+            '''2 keer?
+            ang[j, :] += np.cross(rji, vji)'''
             ang[j, :] += np.cross(rji, vji)
 
             lz = ang[1, 2]
-            inc = np.arccos(lz/np.sqrt(sum(ang[1, :]**2)))
+            inc = np.arccos( lz/np.sqrt(sum( ang[1, :]**2) ) )
 
-            e = (np.cross(vji, ang[1, :])/sum(marr)) - (rji/r1)
+            e = np.cross(vji, ang[1, :]) / sum(marr) - rji/r1
 
-            a = (sum(ang[1, :]**2))/(sum(marr)*(1-sum(e**2)))
+            a = sum( ang[1, :]**2 )/ (sum(marr) * (1-sum(e**2) ))
 
     return e, a
 
