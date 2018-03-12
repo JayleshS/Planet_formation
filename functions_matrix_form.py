@@ -159,23 +159,18 @@ def e_tot(particles, marr):
 def get_orbital_elements(particles, marr):
     ang = np.zeros((pars.Np, 3))
     n = np.zeros(3)
-    for i in range(pars.Np):
-        for j in range(i+1, pars.Np):
-            rji = particles[j, 0 ,:] - particles[i, 0, :]
-            vji = particles[j, 1 ,:] - particles[i, 1, :]
-            r1 = np.sqrt(sum(rji**2))
+    
+    rji = particles[1, 0, :] - particles[0, 0, :]
+    vji = particles[1, 1, :] - particles[0, 1, :]
+    r1 = np.sqrt(sum(rji**2))
 
-            '''2 keer?
-            ang[j, :] += np.cross(rji, vji)'''
-            ang[j, :] += np.cross(rji, vji)
+    ang[1, :] += np.cross(rji, vji)
 
-            lz = ang[1, 2]
-            inc = np.arccos( lz/np.sqrt(sum( ang[1, :]**2) ) )
+    lz = ang[1, 2]
+    inc = np.arccos(lz / np.sqrt(sum(ang[1, :]**2)))
 
-            e = np.cross(vji, ang[1, :]) / sum(marr) - rji/r1
+    e = (np.cross(vji, ang[1, :]))/(pars.gN*sum(marr)) - (rji/r1)
 
-            a = sum( ang[1, :]**2 )/ (sum(marr) * (1-sum(e**2) ))
+    a = (sum(ang[1, :]**2))/(pars.gN*sum(marr)*(1-sum(e**2)))
 
     return e, a
-
-print get_orbital_elements(*init_2body(0.09))
