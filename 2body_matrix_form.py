@@ -115,7 +115,7 @@ def hermite(dt, tfinal):
 	return x_and_v, e_error
 
 
-
+print 'test'
 
 def leapfrog_drag(dt, tfinal):
 	particles, marr = fn.init_2body(0)
