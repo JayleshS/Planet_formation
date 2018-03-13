@@ -59,6 +59,7 @@ def midpoint(dt, tfinal):
 
 	return x_and_v, e_error
 
+
 def leapfrog(dt, tfinal):
 	particles, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(particles, marr)
@@ -104,7 +105,7 @@ def hermite(dt, tfinal):
 
 		x_and_v.append(particles.tolist())
 		e, a = fn.get_orbital_elements(particles, marr)
-		ecc.append
+		# ecc.append
 
 		time += dt
 
@@ -153,9 +154,6 @@ def leapfrog_drag(dt, tfinal):
 	return x_and_v, e_error
 
 
-
-
-
 def plot(particles):
 	'''
 	Plots list (t, Np, 2, 3)
@@ -169,10 +167,6 @@ def plot(particles):
 	plt.xlabel('$x_{pos}$[cm]')
 	plt.ylabel('$y_{pos}$[cm]')
 	plt.show()
-
-
-
-
 
 
 def plot_error(timestep, error1, error2, error3, error4):
@@ -190,27 +184,16 @@ def plot_error(timestep, error1, error2, error3, error4):
 	plt.show()
 
 
-
-
-
-
-# print 'euler_forward: \n',euler(1,10)[0]
-#
-# print 'euler_forward: \n',euler(1,10)[0]
-
-
-timestep=[1e-2, 1e-3]
-
 def main():
-	# pos_hermite, error_hermite = hermite(0.001*pars.yr, 3*pars.yr)
-	# print error_hermite
+	pos_hermite, error_hermite = hermite(0.01*pars.yr, 10*pars.yr)
+	print 'error hermite =', error_hermite
 	# plot(pos_hermite)
- 	plot( midpoint( 0.001*pars.yr, 12.5 * pars.yr)[0] )
+ # 	plot( midpoint( 0.001*pars.yr, 12.5 * pars.yr)[0] )
 
-	error_euler    = []
-	error_midpoint = []
-	error_leapfrog = []
-	error_hermite  = []
+	# error_euler    = []
+	# error_midpoint = []
+	# error_leapfrog = []
+	# error_hermite  = []
 
 	# for t in timestep:
 	# 	# error_hermite, pos_hermite = hermite(t, 30*pars.yr)
@@ -230,9 +213,9 @@ def main():
 	# plot_error(timestep, error_euler, error_midpoint, error_leapfrog, error_hermite)
 
 
-	# pos_leapfrog, error_leapfrog = leapfrog(dt, tfinal)
+	pos_leapfrog, error_leapfrog = leapfrog(0.01*pars.yr, 10*pars.yr)
 	# plot(pos_leapfrog)
-	# print 'error leapfrog =' ,error_leapfrog
+	print 'error leapfrog =' ,error_leapfrog
 	# print xv
 
 if __name__ == '__main__':
