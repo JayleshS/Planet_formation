@@ -7,13 +7,6 @@ import matplotlib.pyplot as plt
 plt.rcParams['axes.linewidth'] = 2   # Create thicker lines around plots
 plt.rcParams['lines.linewidth'] = 2  # Create thicker lines in plots
 
-# xarr, varr, marr = fn.init_2body(0)
-# xarr, varr, marr = fn.init_2body(0)
-# etot0 = fn.e_tot(xarr, varr, marr)
-
-
-# etot0 = fn.e_tot(xarr, varr, marr)
-
 x_and_v =[]
 
 
@@ -60,16 +53,22 @@ def midpoint(dt, tfinal):
 	return x_and_v, e_error
 
 
-def leapfrog(dt, tfinal):
+def leapfrog(dt, tfinal, drag=False):
 	particles, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(particles, marr)
 	time = 0
 	# print dingems
 	while time < tfinal:
-		acc   = fn.forces(particles, marr)
+		if drag:
+			acc = fn.forces_total(particles, marr)
+		else:
+			acc = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
 		particles[:,0,:] += particles[:,1,:]*dt
-		acc   = fn.forces(particles, marr)
+		if drag:
+			acc = fn.forces_total(particles, marr)
+		else:
+			acc = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
 
 		x_and_v.append(particles.tolist())
@@ -86,6 +85,8 @@ def hermite(dt, tfinal):
 	etot0 = fn.e_tot(particles, marr)
 	time = 0
 	iterations = 2
+	ecc = []
+	a_list = []
 
 	while time < tfinal:
 		acc, jerk = fn.forces_hermite(particles, marr)
@@ -105,17 +106,16 @@ def hermite(dt, tfinal):
 
 		x_and_v.append(particles.tolist())
 		e, a = fn.get_orbital_elements(particles, marr)
-		# ecc.append
+		ecc.append(np.sqrt(sum(e**2)))
+		a_list.append(a)
 
 		time += dt
 
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
 
-	return x_and_v, e_error
+	return x_and_v, e_error, ecc, a_list
 
-
-print 'yooo dit is een test'
 
 def leapfrog_drag(dt, tfinal):
 	particles, marr = fn.init_2body(0)
@@ -154,14 +154,13 @@ def leapfrog_drag(dt, tfinal):
 	return x_and_v, e_error
 
 
-def plot(particles):
+def plot_pos(particles):
 	'''
 	Plots list (t, Np, 2, 3)
 	'''
 	xarr = np.array(particles)
 	for planet in range(pars.Np):
 		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1])
-	plt.plot(xarr[:, planet, 0, 0][0:1100], xarr[:, planet, 0, 1][0:1100], c='r', label="Initial orbit")
 
 	plt.legend()
 	plt.xlabel('$x_{pos}$[cm]')
@@ -185,38 +184,11 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 
 def main():
-	pos_hermite, error_hermite = hermite(0.01*pars.yr, 10*pars.yr)
-	print 'error hermite =', error_hermite
-	# plot(pos_hermite)
- # 	plot( midpoint( 0.001*pars.yr, 12.5 * pars.yr)[0] )
-
-	# error_euler    = []
-	# error_midpoint = []
-	# error_leapfrog = []
-	# error_hermite  = []
-
-	# for t in timestep:
-	# 	# error_hermite, pos_hermite = hermite(t, 30*pars.yr)
-	#
-	# 	# print 'error euler forward    ' +str(t)+': ', euler   (t * pars.yr ,10)
-	# 	# print 'error midpoint forward ' +str(t)+': ', midpoint(t * pars.yr ,1e8)[1]
-	# 	# print 'error leapfrog forward ' +str(t)+': ', leapfrog(t * pars.yr ,1e8)[1]
-	#
-	# 	error_euler.append(euler       (t * pars.yr, 3*pars.yr )[1])
-	# 	error_midpoint.append(midpoint (t * pars.yr, 3*pars.yr )[1])
-	# 	error_leapfrog.append(leapfrog (t * pars.yr, 3*pars.yr )[1])
-	# 	error_hermite.append (hermite  (t * pars.yr, 3*pars.yr )[1])
-	#
-	# # print 'error_euler: ', error_euler
-	# # print 'error_midpoint: ', error_midpoint
-	# # print 'error_leapfrog: ', error_leapfrog
-	# plot_error(timestep, error_euler, error_midpoint, error_leapfrog, error_hermite)
-
-
-	pos_leapfrog, error_leapfrog = leapfrog(0.01*pars.yr, 10*pars.yr)
+	pos_leapfrog, error_leapfrog = leapfrog(0.001*pars.yr, 10*pars.yr, drag=False)
 	# plot(pos_leapfrog)
+
 	print 'error leapfrog =' ,error_leapfrog
-	# print xv
+
 
 if __name__ == '__main__':
 	main()
