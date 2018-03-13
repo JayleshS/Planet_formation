@@ -115,16 +115,14 @@ def hermite(dt, tfinal):
 	return x_and_v, e_error
 
 
-print 'test'
 
 def leapfrog_drag(dt, tfinal):
 	particles, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(particles, marr)
 	time = 0
-	# print dingems
+
 	while time < tfinal:
-		print fn.forces(particles, marr)
-		print 'nog een'
+		
 
 		acc   = fn.forces(particles, marr)[0]
 		particles[0,1,:] += acc* dt/2
@@ -216,6 +214,8 @@ def main():
 	pos_leapfrog, error_leapfrog = leapfrog(0.01*pars.yr, 10*pars.yr)
 	# plot(pos_leapfrog)
 	print 'error leapfrog =' ,error_leapfrog
+
+	plot(leapfrog_drag(0.01,120)[0])
 	# print xv
 
 if __name__ == '__main__':
