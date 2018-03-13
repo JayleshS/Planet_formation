@@ -61,12 +61,14 @@ def leapfrog(dt, tfinal, drag=False):
 	time = 0
 	# print dingems
 	while time < tfinal:
+		# print particles
 		if drag:
 			acc = fn.forces_total(particles, marr)
 		else:
 			acc = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
 		particles[:,0,:] += particles[:,1,:]*dt
+
 		if drag:
 			acc = fn.forces_total(particles, marr)
 		else:
@@ -165,9 +167,8 @@ def plot_pos(particles):
 	'''
 	xarr = np.array(particles)
 	for planet in range(pars.Np):
-		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1])
-	plt.axvline(x=pars.au)
-
+		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1], label=planet)
+	plt.axhline(y=pars.au)
 	plt.legend()
 	plt.xlabel('$x_{pos}$[cm]')
 	plt.ylabel('$y_{pos}$[cm]')
@@ -193,12 +194,14 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 
 def main():
-
-	pos_leapfrog, error_leapfrog = leapfrog(0.001*pars.yr, 5*pars.yr, drag=True)
+	pos_leapfrog, error_leapfrog = leapfrog(0.01*pars.yr, 8*pars.yr, drag=True)
 	plot_pos(pos_leapfrog)
-
-
-	print 'error leapfrog =' ,error_leapfrog
+	# xarr = np.array(pos_leapfrog)
+	# plt.plot(xarr[:,1,0,0], xarr[:,1,0,1], label='earth')
+	# plt.plot(xarr[:,0,0,0], xarr[:,0,0,1], label='sun')
+	# plt.legend()
+	# plt.show()
+	# print 'error leapfrog =' ,error_leapfrog
 
 if __name__ == '__main__':
 	main()

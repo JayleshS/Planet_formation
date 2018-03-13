@@ -96,7 +96,21 @@ def forces_migration(particles, marr):
 
 
 def forces_total(particles, marr):
-    return forces(particles, marr) + forces_migration(particles, marr)
+    acc_tot = np.zeros((pars.Np, 3))
+
+    acc_grav = forces(particles, marr)
+    acc_mig = forces_migration(particles, marr)
+
+    acc_tot = acc_grav
+    # print 'acc_tot zonder mig:', acc_tot
+    # print 'acc_mig:', acc_mig
+    # print 'tot:', acc_tot.shape
+    # print 'tot[1,:]:', acc_tot[1,:].shape
+    # print 'mig:', acc_mig.shape
+    # print 'grav:', acc_grav.shape
+
+    acc_tot[1, :] = acc_grav[1, :] + acc_mig
+    return acc_tot
 
 
 
