@@ -1,123 +1,150 @@
 import numpy as np
 import pars
-import functions as fn
+import functions_matrix_form as fn
 import matplotlib.pyplot as plt
+# import matplotlib as mpl
+
+plt.rcParams['axes.linewidth'] = 2   # Create thicker lines around plots
+plt.rcParams['lines.linewidth'] = 2  # Create thicker lines in plots
 
 # xarr, varr, marr = fn.init_2body(0)
 # xarr, varr, marr = fn.init_2body(0)
 # etot0 = fn.e_tot(xarr, varr, marr)
 
-tfinal = 1.1*pars.yr
-dt = 0.001*pars.yr
+
 # etot0 = fn.e_tot(xarr, varr, marr)
 
-# x = []
-# v = []
+x_and_v =[]
+eccentricity_save = []
+semi_major_axis_save = []
 
-
-
-def euler(dt, tfinal):
-	xarr, varr, marr = fn.init_2body(0)
-	etot0 = fn.e_tot(xarr, varr, marr)
-	time = 0
-	x1 = []
-	x2 = []
-	y1 = []
-	y2 = []
-	while time < tfinal:
-		acc = fn.forces(xarr, varr, marr)
-		xarr += varr*dt
-		varr += acc*dt
-
-		x1.append(xarr[0, 0])
-		y1.append(xarr[1, 0])
-		x2.append(xarr[0, 1])
-		y2.append(xarr[1, 1])
-
-		# x.append(list(xarr))
-		# v.append(list(varr))
-
-
-
-		time += dt
-	etot1 = fn.e_tot(xarr, varr, marr)
-	e_error = (etot1 - etot0) / etot0
-	return x1, y1, x2, y2, e_error
-
-# print 'hi'
-# euler(5.,10)
-
-
-def midpoint(dt, tfinal):
-	xarr, varr, marr = fn.init_2body(0)
-	etot0 = fn.e_tot(xarr, varr, marr)
-	coords = [xarr]
-	time = 0
-
-	while time < tfinal:
-		acc = fn.forces(xarr, varr, marr)
-		xmid = xarr + varr * dt / 2
-		vmid = varr + acc * dt / 2
-		amid = fn.forces(xmid, vmid, marr)
-		xarr += vmid * dt
-		varr += amid * dt
-
-		x.append(list(xarr))
-		v.append(list(varr))
-		# coords.append(xarr)
-
-		time += dt
-
-	etot1 = fn.e_tot(xarr, varr, marr)
-	e_error = (etot1 - etot0) / etot0
-
-	# print dingems
-	return x, v, e_error
 
 def leapfrog(dt, tfinal):
-	xarr, varr, marr = fn.init_2body(0)
-	etot0 = fn.e_tot(xarr, varr, marr)
+	particles, marr = fn.init_2body(0)
+	etot0 = fn.e_tot(particles, marr)
 	time = 0
-	# print dingems
+
 	while time < tfinal:
-		acc   = fn.forces(xarr, varr, marr)
-		varr += acc* dt/2
-		xarr += varr*dt
-		acc   = fn.forces(xarr, varr, marr)
-		varr += acc* dt/2
+		acc   = fn.forces(particles, marr)
+		particles[:,1,:] += acc* dt/2
+		particles[:,0,:] += particles[:,1,:]*dt
+		acc   = fn.forces(particles, marr)
+		particles[:,1,:] += acc* dt/2
+
+		x_and_v.append(particles.tolist())
 
 		time += dt
-	etot1 = fn.e_tot(xarr, varr, marr)
+	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
 
-	return xarr, varr
+	return x_and_v, e_error
 
-def plot(x1_val, y1_val, x2_val, y2_val):
-	plt.plot(x1_val, y1_val)
-	plt.plot(x2_val, y2_val)
-	# print x2_val
+
+def hermite(dt, tfinal):
+	particles, marr = fn.init_2body(0)
+	etot0 = fn.e_tot(particles, marr)
+	time = 0
+	iterations = 2
+
+	while time < tfinal:
+		acc, jerk = fn.forces_hermite(particles, marr)
+
+		old_x = np.copy(particles[:, 0, :])
+		old_v = np.copy(particles[:, 1, :])
+		old_a = np.copy(acc)
+		old_j = np.copy(jerk)
+
+		particles[:, 0, :] += particles[:, 1, :] * dt + acc  * dt**2 / 2 + jerk * dt**3 / 6
+		particles[:, 1, :] += acc                * dt + jerk * dt**2 / 2
+
+		for i in range(iterations):
+			acc, jerk = fn.forces_hermite(particles, marr)
+			particles[:, 1, :] = old_v + (old_a + acc               ) * dt/2 + ((old_j - jerk)*dt**2)/12
+			particles[:, 0, :] = old_x + (old_v + particles[:, 1, :]) * dt/2 + ((old_a - acc )*dt**2)/12
+
+		x_and_v.append(particles.tolist())
+
+		time += dt
+
+	etot1 = fn.e_tot(particles, marr)
+	e_error = (etot1 - etot0) / etot0
+
+	return x_and_v, e_error
+
+
+
+
+def leapfrog_drag(dt, tfinal):
+	particles, marr = fn.init_2body(0)
+	etot0 = fn.e_tot(particles, marr)
+	time = 0
+
+	while time < tfinal:
+
+		acc   = fn.forces(particles, marr)[0]
+		particles[0,1,:] += acc* dt/2
+		particles[0,0,:] += particles[0,1,:]*dt
+		acc   = fn.forces(particles, marr)[0]
+		particles[0,1,:] += acc* dt/2
+
+		grav   = fn.forces(particles, marr)[1]
+		drag = fn.forces_migration(particles, marr)
+		acc = grav + drag
+
+		particles[1,1,:] += acc* dt/2
+		particles[1,0,:] += particles[1,1,:]*dt
+
+		grav   = fn.forces(particles, marr)[1]
+		drag = fn.forces_migration(particles, marr)
+		acc = grav + drag*1e1
+
+		particles[1,1,:] += acc* dt/2
+
+		eccentricity, semi_major_axis = fn.get_orbital_elements(particles, marr)
+
+
+		eccentricity_save.   append(eccentricity   .tolist())
+		semi_major_axis_save.append(semi_major_axis.tolist())
+		x_and_v.append(particles.tolist())
+
+		time += dt
+
+	etot1 = fn.e_tot(particles, marr)
+	e_error = (etot1 - etot0) / etot0
+
+	return x_and_v, e_error, eccentricity_save, semi_major_axis_save
+
+
+
+
+
+def plot(particles):
+	'''
+	Plots list (t, Np, 2, 3)
+	'''
+	xarr = np.array(particles)
+	for planet in range(pars.Np):
+		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1])
+	plt.plot(xarr[:, planet, 0, 0][0:1100], xarr[:, planet, 0, 1][0:1100], c='r', label="Initial orbit")
+
+	plt.legend()
+	plt.xlabel('$x_{pos}$[cm]')
+	plt.ylabel('$y_{pos}$[cm]')
 	plt.show()
-	# pass
-
-def plottest(xarr):
-	# plt.plot(xarr[:,0], xarr[:,1])
-	# plt.plot(xarr[:, 0, 0], xarr[:, 0, 1])
-	# plt.plot(xarr[:, 1, 0], xarr[:, 1, 1])
-	# plt.show()
-	# print xarr[:, 1, 0]
-	# print xarr
-	pass
-
-
 
 def main():
+	# pos_hermite, error_hermite = hermite(0.001*pars.yr, 3*pars.yr)
+	# print error_hermite
+	# plot(pos_hermite)
+ 	# plot( leapfrog_drag( 0.01*pars.yr, 120.0 * pars.yr)[0] )
 
 
-	x1_euler, y1_euler, x2_euler, y2_euler, e_error_euler = euler(dt, tfinal)
-	plot(x1_euler, y1_euler, x2_euler, y2_euler)
-	# print e_error_euler
+	print 'eccentricity =', leapfrog_drag( 0.01*pars.yr, 12.0 * pars.yr)[2]
 
-	# plot(euler(xarr, varr, marr)[:-1])
+	plt.plot(leapfrog_drag( 0.001*pars.yr, 12.0 * pars.yr)[3], label="a")
+	plt.legend()
+	plt.show()
+
 
 if __name__ == '__main__':
 	main()

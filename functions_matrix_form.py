@@ -159,7 +159,7 @@ def e_tot(particles, marr):
 def get_orbital_elements(particles, marr):
     ang = np.zeros((pars.Np, 3))
     n = np.zeros(3)
-    
+
     rji = particles[1, 0, :] - particles[0, 0, :]
     vji = particles[1, 1, :] - particles[0, 1, :]
     r1 = np.sqrt(sum(rji**2))
@@ -173,4 +173,3 @@ def get_orbital_elements(particles, marr):
     a = (sum(ang[1, :]**2))/(pars.gN*sum(marr)*(1-sum(e**2)))
 
     return e, a
-
