@@ -15,6 +15,8 @@ plt.rcParams['lines.linewidth'] = 2  # Create thicker lines in plots
 # etot0 = fn.e_tot(xarr, varr, marr)
 
 x_and_v =[]
+e_save = []
+a_save = []
 
 
 def euler(dt, tfinal):
@@ -69,8 +71,7 @@ def leapfrog(dt, tfinal):
 		acc   = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
 		particles[:,0,:] += particles[:,1,:]*dt
-		acc   = fn.forces(particles, marr)
-		particles[:,1,:] += acc* dt/2
+
 
 		x_and_v.append(particles.tolist())
 
@@ -122,7 +123,6 @@ def leapfrog_drag(dt, tfinal):
 	time = 0
 
 	while time < tfinal:
-		
 
 		acc   = fn.forces(particles, marr)[0]
 		particles[0,1,:] += acc* dt/2
@@ -143,16 +143,21 @@ def leapfrog_drag(dt, tfinal):
 
 		particles[1,1,:] += acc* dt/2
 
+
+		e, a = fn.get_orbital_elements(particles, marr)
+
+		e_save.append(e.tolist())
+		a_save.append(a.tolist())
 		x_and_v.append(particles.tolist())
 
 		time += dt
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
 
-	return x_and_v, e_error
+	return x_and_v, e_error, e_save, a_save
 
 
-def plot(particles):
+def plotjes(particles):
 	'''
 	Plots list (t, Np, 2, 3)
 	'''
@@ -185,8 +190,8 @@ def plot_error(timestep, error1, error2, error3, error4):
 def main():
 	pos_hermite, error_hermite = hermite(0.01*pars.yr, 10*pars.yr)
 	print 'error hermite =', error_hermite
-	# plot(pos_hermite)
- # 	plot( midpoint( 0.001*pars.yr, 12.5 * pars.yr)[0] )
+	# plotjes(pos_hermite)
+ 	# plotjes( midpoint( 0.001*pars.yr, 12.5 * pars.yr)[0] )
 
 	# error_euler    = []
 	# error_midpoint = []
@@ -212,10 +217,11 @@ def main():
 
 
 	pos_leapfrog, error_leapfrog = leapfrog(0.01*pars.yr, 10*pars.yr)
-	# plot(pos_leapfrog)
+	# plotjes(pos_leapfrog)
 	print 'error leapfrog =' ,error_leapfrog
 
-	plot(leapfrog_drag(0.01,120)[0])
+	# plotjes(leapfrog_drag(0.001*pars.yr,120*pars.yr)[0])
+
 	# print xv
 
 if __name__ == '__main__':
