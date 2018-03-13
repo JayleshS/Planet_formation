@@ -15,7 +15,6 @@ plt.rcParams['lines.linewidth'] = 2  # Create thicker lines in plots
 # etot0 = fn.e_tot(xarr, varr, marr)
 
 x_and_v =[]
-eccentricity_save = []
 
 
 def euler(dt, tfinal):
@@ -104,6 +103,8 @@ def hermite(dt, tfinal):
 			particles[:, 0, :] = old_x + (old_v + particles[:, 1, :]) * dt/2 + ((old_a - acc )*dt**2)/12
 
 		x_and_v.append(particles.tolist())
+		e, a = fn.get_orbital_elements(particles, marr)
+		ecc.append
 
 		time += dt
 
@@ -121,6 +122,8 @@ def leapfrog_drag(dt, tfinal):
 	time = 0
 	# print dingems
 	while time < tfinal:
+		print fn.forces(particles, marr)
+		print 'nog een'
 
 		acc   = fn.forces(particles, marr)[0]
 		particles[0,1,:] += acc* dt/2
@@ -130,29 +133,24 @@ def leapfrog_drag(dt, tfinal):
 
 		grav   = fn.forces(particles, marr)[1]
 		drag = fn.forces_migration(particles, marr)
-		acc = grav + drag
+		acc = grav + drag*1e-1
 
 		particles[1,1,:] += acc* dt/2
 		particles[1,0,:] += particles[1,1,:]*dt
 
 		grav   = fn.forces(particles, marr)[1]
 		drag = fn.forces_migration(particles, marr)
-		acc = grav + drag*1e1
+		acc = grav + drag*1e-1
 
 		particles[1,1,:] += acc* dt/2
-
-		ecc = fn.get_orbital_elements(particles, marr)[0]
-
-		eccentricity_save.append(ecc.tolist())
 
 		x_and_v.append(particles.tolist())
 
 		time += dt
-
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
 
-	return x_and_v, e_error, eccentricity_save
+	return x_and_v, e_error
 
 
 
@@ -173,6 +171,10 @@ def plot(particles):
 	plt.show()
 
 
+
+
+
+
 def plot_error(timestep, error1, error2, error3, error4):
 	plt.plot(timestep, np.abs(error1), label = 'euler_forward')
 	plt.plot(timestep, np.abs(error2), label = 'midpoint')
@@ -189,6 +191,9 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 
 
+
+
+
 # print 'euler_forward: \n',euler(1,10)[0]
 #
 # print 'euler_forward: \n',euler(1,10)[0]
@@ -200,15 +205,12 @@ def main():
 	# pos_hermite, error_hermite = hermite(0.001*pars.yr, 3*pars.yr)
 	# print error_hermite
 	# plot(pos_hermite)
- 	plot( leapfrog_drag( 0.01*pars.yr, 1200.0 * pars.yr)[0] )
+ 	plot( midpoint( 0.001*pars.yr, 12.5 * pars.yr)[0] )
 
-
-	# print 'eccentricity =', leapfrog_drag( 0.001*pars.yr, 12.0 * pars.yr)[2]
-
-	# error_euler    = []
-	# error_midpoint = []
-	# error_leapfrog = []
-	# error_hermite  = []
+	error_euler    = []
+	error_midpoint = []
+	error_leapfrog = []
+	error_hermite  = []
 
 	# for t in timestep:
 	# 	# error_hermite, pos_hermite = hermite(t, 30*pars.yr)
