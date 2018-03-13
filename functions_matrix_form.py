@@ -68,17 +68,30 @@ def forces_migration(particles, marr):
     rad = np.sqrt(rji[0]**2 + rji[1]**2)
     theta = np.arctan2(rji[1], rji[0])
 
-
     vKep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
-    F_mig = -(vKep/rad) * vKep
+    F_mig = -(vKep/rad) *vKep*0.01
 
-    acc[0] = -F_mig * np.cos(theta)
-    acc[1] = F_mig * np.sin(theta)
+    acc[0] = -F_mig * np.sin(theta)
+    acc[1] = F_mig * np.cos(theta)
 
     return acc
 
 def forces_total(particles, marr):
-    return forces(particles, marr) + forces_migration(particles, marr)
+    acc_tot = np.zeros((pars.Np, 3))
+
+    acc_grav = forces(particles, marr)
+    acc_mig = forces_migration(particles, marr)
+
+    acc_tot = acc_grav
+    # print 'acc_tot zonder mig:', acc_tot
+    # print 'acc_mig:', acc_mig
+    # print 'tot:', acc_tot.shape
+    # print 'tot[1,:]:', acc_tot[1,:].shape
+    # print 'mig:', acc_mig.shape
+    # print 'grav:', acc_grav.shape
+
+    acc_tot[1, :] = acc_grav[1, :] + acc_mig
+    return acc_tot
 
 
 def e_tot(particles, marr):
