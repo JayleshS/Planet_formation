@@ -58,6 +58,8 @@ def midpoint(dt, tfinal):
 def leapfrog(dt, tfinal, drag=False, init_e=0):
 	particles, marr = fn.init_2body(init_e)
 	etot0 = fn.e_tot(particles, marr)
+	eccentricity = []
+	semi_major_axis = []
 	time = 0
 	# print dingems
 	while time < tfinal:
@@ -76,13 +78,17 @@ def leapfrog(dt, tfinal, drag=False, init_e=0):
 		particles[:,1,:] += acc* dt/2
 
 		x_and_v.append(particles.tolist())
+		ecc, a = fn.get_orbital_elements(particles, marr)
+
+		eccentricity.append(np.sqrt(sum(ecc)**2))
+		semi_major_axis.append(a)
 
 		time += dt
+
+
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
-
-	return x_and_v, e_error
-
+	return x_and_v, e_error, semi_major_axis, eccentricity
 
 def hermite(dt, tfinal):
 	particles, marr = fn.init_2body(0)
@@ -195,8 +201,10 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 
 def main():
-	pos_leapfrog, error_leapfrog = leapfrog(0.01*pars.yr, 10*pars.yr, drag=True)
-	plot_pos(pos_leapfrog)
+	pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog = leapfrog(0.01*pars.yr, 500*pars.yr, drag=True)
+	# plot_pos(pos_leapfrog)
+	plt.plot(a_leapfrog)
+	plt.show()
 	# leapfrog(0.001*pars.yr, 0.004*pars.yr, drag=True)
 
 
