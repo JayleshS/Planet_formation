@@ -7,15 +7,14 @@ import matplotlib.pyplot as plt
 plt.rcParams['axes.linewidth'] = 2   # Create thicker lines around plots
 plt.rcParams['lines.linewidth'] = 2  # Create thicker lines in plots
 
-x_and_v =[]
-e_save = []
-a_save = []
 
 
 def euler(dt, tfinal):
 	particles, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(particles, marr)
 	time = 0
+	x_and_v =[]
+
 
 	while time < tfinal:
 		acc = fn.forces(particles, marr)
@@ -34,6 +33,8 @@ def midpoint(dt, tfinal):
 	particles, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(particles, marr)
 	time = 0
+	x_and_v =[]
+
 
 	while time < tfinal:
 		acc = fn.forces(particles, marr)
@@ -55,24 +56,24 @@ def midpoint(dt, tfinal):
 	return x_and_v, e_error
 
 
-def leapfrog(dt, tfinal, drag=False, init_e=0):
+def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0):
 	particles, marr = fn.init_2body(init_e)
 	etot0 = fn.e_tot(particles, marr)
 	eccentricity = []
 	semi_major_axis = []
 	time = 0
-	# print dingems
+	x_and_v =[]
+
 	while time < tfinal:
-		# print particles
 		if drag:
-			acc = fn.forces_total(particles, marr)
+			acc = fn.forces_total(particles, marr, t_stop)
 		else:
 			acc = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
 		particles[:,0,:] += particles[:,1,:]*dt
 
 		if drag:
-			acc = fn.forces_total(particles, marr)
+			acc = fn.forces_total(particles, marr, t_stop)
 		else:
 			acc = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
@@ -127,46 +128,6 @@ def hermite(dt, tfinal):
 	return x_and_v, e_error, ecc, a_list
 
 
-def leapfrog_drag(dt, tfinal):
-	particles, marr = fn.init_2body(0)
-	etot0 = fn.e_tot(particles, marr)
-	time = 0
-
-	while time < tfinal:
-
-		acc   = fn.forces(particles, marr)[0]
-		particles[0,1,:] += acc* dt/2
-		particles[0,0,:] += particles[0,1,:]*dt
-		acc   = fn.forces(particles, marr)[0]
-		particles[0,1,:] += acc* dt/2
-
-		grav   = fn.forces(particles, marr)[1]
-		drag = fn.forces_migration(particles, marr)
-		acc = grav + drag*1e-1
-
-		particles[1,1,:] += acc* dt/2
-		particles[1,0,:] += particles[1,1,:]*dt
-
-		grav   = fn.forces(particles, marr)[1]
-		drag = fn.forces_migration(particles, marr)
-		acc = grav + drag*1e-1
-
-		particles[1,1,:] += acc* dt/2
-
-
-		e, a = fn.get_orbital_elements(particles, marr)
-
-		e_save.append(e.tolist())
-		a_save.append(a.tolist())
-		x_and_v.append(particles.tolist())
-
-		time += dt
-	etot1 = fn.e_tot(particles, marr)
-	e_error = (etot1 - etot0) / etot0
-
-	return x_and_v, e_error, e_save, a_save
-
-
 def plot_pos(particles):
 	'''
 	Plots list (t, Np, 2, 3)
@@ -179,9 +140,6 @@ def plot_pos(particles):
 	plt.legend()
 	plt.xlabel('$x_{pos}$[cm]')
 	plt.ylabel('$y_{pos}$[cm]')
-	# plt.xlim(-5.*pars.au, 5*pars.au)
-	# plt.ylim(-5*pars.au, 5*pars.au)
-
 	plt.show()
 
 
@@ -201,19 +159,13 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 
 def main():
-	pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog = leapfrog(0.01*pars.yr, 500*pars.yr, drag=True)
+	tstop = 5*pars.yr
+	dt = 0.001*pars.yr
+	tfinal = 
+	pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog = leapfrog(0.001*pars.yr, 25*pars.yr, tstop, drag=True)
 	# plot_pos(pos_leapfrog)
 	plt.plot(a_leapfrog)
 	plt.show()
-	# leapfrog(0.001*pars.yr, 0.004*pars.yr, drag=True)
-
-
-	# xarr = np.array(pos_leapfrog)
-	# plt.plot(xarr[:,1,0,0], xarr[:,1,0,1], label='earth')
-	# plt.plot(xarr[:,0,0,0], xarr[:,0,0,1], label='sun')
-	# plt.legend()
-	# plt.show()
-	# print 'error leapfrog =' ,error_leapfrog
 
 if __name__ == '__main__':
 	main()
