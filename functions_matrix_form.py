@@ -76,11 +76,10 @@ def forces_migration(particles, marr):
     # acc[1,0] = -F_mig * np.cos(theta)
     # acc[1,1] = F_mig * np.sin(theta)
 
-    t_stop = 15*pars.yr
+    t_stop = rad*1e-5
+
     vKep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
-    v_head = vKep*1e-1
-    print v_head
-    print vKep
+    v_head = 1e6
 
 
     v_theta = -np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
@@ -122,11 +121,6 @@ def forces_total(particles, marr):
     acc_tot = acc_grav + acc_mig
     return acc_tot
 
-print forces(*init_2body(0.0))
-print forces_migration(*init_2body(0.0))
-
-print 'totaal \n'
-print forces_total(*init_2body(0.0))
 
 
 def e_tot(particles, marr):

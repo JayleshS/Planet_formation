@@ -55,8 +55,8 @@ def midpoint(dt, tfinal):
 	return x_and_v, e_error
 
 
-def leapfrog(dt, tfinal, drag=False):
-	particles, marr = fn.init_2body(0)
+def leapfrog(dt, tfinal, drag=False, init_e=0):
+	particles, marr = fn.init_2body(init_e)
 	etot0 = fn.e_tot(particles, marr)
 	time = 0
 	# print dingems
@@ -166,6 +166,7 @@ def plot_pos(particles):
 	Plots list (t, Np, 2, 3)
 	'''
 	xarr = np.array(particles)
+
 	for planet in range(pars.Np):
 		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1], label=planet)
 	plt.axhline(y=pars.au)
@@ -194,7 +195,7 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 
 def main():
-	pos_leapfrog, error_leapfrog = leapfrog(0.01*pars.yr, 80*pars.yr, drag=True)
+	pos_leapfrog, error_leapfrog = leapfrog(0.01*pars.yr, 10*pars.yr, drag=True)
 	plot_pos(pos_leapfrog)
 	# leapfrog(0.001*pars.yr, 0.004*pars.yr, drag=True)
 
