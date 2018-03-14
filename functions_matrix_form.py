@@ -69,29 +69,38 @@ def forces_migration(particles, marr):
     theta = np.arctan2(rji[1], rji[0])
 
 
-    '''
-    vKep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
-    F_mig = -(vKep/rad) #* vKep
 
-    acc[1,0] = -F_mig * np.cos(theta)
-    acc[1,1] = F_mig * np.sin(theta)
-
-
-    '''
-    vKep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
-    vel_mag = np.sqrt(vji[0]**2 + vji[1]**2)
-    velo_theta = np.arctan2(vji[1], vji[0])
+    # vKep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
+    # F_mig = -(vKep/rad) #* vKep
+    #
+    # acc[1,0] = -F_mig * np.cos(theta)
+    # acc[1,1] = F_mig * np.sin(theta)
 
     t_stop = 15*pars.yr
-    v_head = 1e-6*pars.au
+    vKep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
+    v_head = vKep*1e-1
+    print v_head
+    print vKep
 
 
-    acc[1,0] = -( (particles[1, 1, 0]-particles[0, 1, 0])  -  (vKep-v_head) * np.cos(theta) ) / t_stop
-    acc[1,1] =  ( (particles[1, 1, 1]-particles[0, 1, 1])  -  (vKep-v_head) * np.sin(theta) ) / t_stop
+    v_theta = -np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
+    v_r     =  np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
+
+    v_gas = (vKep - v_head)
+
+    v_theta -= v_gas
+
+    F_theta = - (v_theta) / t_stop
+    F_r     = - v_r / t_stop
+
+    acc[1,0] = np.cos(theta) * F_r - np.sin(theta) * F_theta
+    acc[1,1] = np.sin(theta) * F_r + np.cos(theta) * F_theta
+
+
+    # acc[1,0] = -( vji[0]  -  (vKep-v_head) * np.cos(theta) ) / t_stop
+    # acc[1,1] =  ( vji[1]  -  (vKep-v_head) * np.sin(theta) ) / t_stop
 
     return acc
-
-
 
 
 
@@ -106,12 +115,18 @@ def forces_total(particles, marr):
     # print 'acc_mig:', acc_mig
     # print 'tot:', acc_tot.shape
     # print 'tot[1,:]:', acc_tot[1,:].shape
-    # print 'mig:', acc_mig.shape
-    # print 'grav:', acc_grav.shape
+    # print 'mig:', acc_mig
+    # print 'grav:', acc_grav
 
-    acc_tot[1, :] = acc_grav[1, :] + acc_mig
+    #acc_tot[1, :] = acc_grav[1, :] + acc_mig
+    acc_tot = acc_grav + acc_mig
     return acc_tot
 
+print forces(*init_2body(0.0))
+print forces_migration(*init_2body(0.0))
+
+print 'totaal \n'
+print forces_total(*init_2body(0.0))
 
 
 def e_tot(particles, marr):

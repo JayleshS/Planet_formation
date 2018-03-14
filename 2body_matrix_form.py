@@ -172,8 +172,8 @@ def plot_pos(particles):
 	plt.legend()
 	plt.xlabel('$x_{pos}$[cm]')
 	plt.ylabel('$y_{pos}$[cm]')
-	plt.xlim(-5*pars.au, 5*pars.au)
-	plt.ylim(-5*pars.au, 5*pars.au)
+	# plt.xlim(-5.*pars.au, 5*pars.au)
+	# plt.ylim(-5*pars.au, 5*pars.au)
 
 	plt.show()
 
@@ -194,8 +194,11 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 
 def main():
-	pos_leapfrog, error_leapfrog = leapfrog(0.01*pars.yr, 8*pars.yr, drag=True)
+	pos_leapfrog, error_leapfrog = leapfrog(0.01*pars.yr, 80*pars.yr, drag=True)
 	plot_pos(pos_leapfrog)
+	# leapfrog(0.001*pars.yr, 0.004*pars.yr, drag=True)
+
+
 	# xarr = np.array(pos_leapfrog)
 	# plt.plot(xarr[:,1,0,0], xarr[:,1,0,1], label='earth')
 	# plt.plot(xarr[:,0,0,0], xarr[:,0,0,1], label='sun')
