@@ -80,12 +80,12 @@ def forces_migration(particles, marr):
 
 
     vKep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
-    v_head = 1e6
-
+    v_head = vKep *0.4
 
     v_theta = -np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
     v_r     =  np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
-
+    vrvk = v_r / vKep
+    # print vrvk
     v_gas = (vKep - v_head)
 
     v_theta -= v_gas
@@ -96,11 +96,7 @@ def forces_migration(particles, marr):
     acc[1,0] = np.cos(theta) * F_r - np.sin(theta) * F_theta
     acc[1,1] = np.sin(theta) * F_r + np.cos(theta) * F_theta
 
-
-    # acc[1,0] = -( vji[0]  -  (vKep-v_head) * np.cos(theta) ) / t_stop
-    # acc[1,1] =  ( vji[1]  -  (vKep-v_head) * np.sin(theta) ) / t_stop
-
-    return acc
+    return acc, vrvk
 
 
 
@@ -108,7 +104,7 @@ def forces_total(particles, marr):
     acc_tot = np.zeros((pars.Np, 3))
 
     acc_grav = forces(particles, marr)
-    acc_mig = forces_migration(particles, marr)
+    acc_mig, vrvk = forces_migration(particles, marr, t_stop)
 
     acc_tot = acc_grav
     # print 'acc_tot zonder mig:', acc_tot
@@ -120,7 +116,7 @@ def forces_total(particles, marr):
 
     #acc_tot[1, :] = acc_grav[1, :] + acc_mig
     acc_tot = acc_grav + acc_mig
-    return acc_tot
+    return acc_tot, vrvk
 
 
 
