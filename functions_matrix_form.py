@@ -9,21 +9,28 @@ def init_2body(ecc):
     marr[0] = pars.mSun
     marr[1] = pars.mEarth
 
+    # vKep = np.sqrt((pars.mEarth+pars.mSun)/pars.a1)
+    # vKep = sqrt((pars.muEarth+pars.muSun)/sqrt((2*pars.au**2)))
     vKep = np.sqrt(pars.gN*(pars.mSun + pars.mEarth) / pars.au)
 
     particles[1,0,:] = [pars.au * (1+ecc), 0., 0.]  # Initial position of 2nd particle
+    # xarr[:, 1] = [pars.au * (1+ecc), 0., .5*pars.au*(1+ecc)]
+
     particles[1,1,:] = [0., vKep * np.sqrt((1-ecc)/(1+ecc)), 0.]  # Initial velocity of 2nd particle
 
     return particles, marr
-
 
 def forces(particles, marr):
     acc = np.zeros((pars.Np,3))
     for i in range(pars.Np):
         for j in range(i+1, pars.Np):
             rji = particles[j, 0, :] - particles[i, 0, :]
+
+            # acc[i,:] += pars.gN*rji/(sum(rji**2)**(3/2)) * marr[j]
+            # acc[j,:] -= pars.gN*rji/(sum(rji**2)**(3/2)) * marr[i]
             acc[i, :] += pars.gN * rji / (np.sqrt(sum(rji**2)) * sum(rji**2)) * marr[j]
-            acc[j, :] -= pars.gN * rji / (np.sqrt(sum(rji**2)) * sum(rji**2)) * marr[i]   
+            acc[j, :] -= pars.gN * rji / (np.sqrt(sum(rji**2)) * sum(rji**2)) * marr[i]
+
     return acc
 
 
@@ -36,6 +43,7 @@ def forces_hermite(particles, marr):
             vji = particles[j, 1, :] - particles[i, 1, :]
 
             r2 = sum(rji**2)
+            # print 'r2 =', r2
             r1 = np.sqrt(r2)
             r3 = r1 * r2
             rv = sum(rji * vji)
@@ -47,11 +55,11 @@ def forces_hermite(particles, marr):
             jerk = (vji - 3 * rv * rji) / r3
             jer[i, :] += pars.gN * jerk * marr[j]
             jer[i, :] -= pars.gN * jerk * marr[i]
+            # print acc
 
     return acc, jer
 
-
-def forces_mongoljonguh(particles, marr, t_stop):
+def forces_migration(particles, marr, t_stop):
     acc = np.zeros((pars.Np,3))
     rji = particles[1, 0, :] - particles[0, 0, :]
     vji = particles[1, 1, :] - particles[0, 1, :]
@@ -73,7 +81,7 @@ def forces_mongoljonguh(particles, marr, t_stop):
     v_theta -= v_gas
 
     F_theta = - (v_theta) / t_stop
-    F_r = - v_r / t_stop
+    F_r     = - v_r / t_stop
 
     acc[1, 0] = np.cos(theta) * F_r - np.sin(theta) * F_theta
     acc[1, 1] = np.sin(theta) * F_r + np.cos(theta) * F_theta
@@ -82,7 +90,7 @@ def forces_mongoljonguh(particles, marr, t_stop):
 
 
 
-def forces_total(particles, marr, t_stop):
+def forces_total(particles, marr,t_stop):
     acc_tot = np.zeros((pars.Np, 3))
 
     acc_grav = forces(particles, marr)
