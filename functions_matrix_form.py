@@ -59,7 +59,7 @@ def forces_hermite(particles, marr):
 
     return acc, jer
 
-def forces_migration(particles, marr):
+def forces_migration(particles, marr, t_stop):
     acc = np.zeros((pars.Np,3))
     rji = particles[1, 0, :] - particles[0, 0, :]
     vji = particles[1, 1, :] - particles[0, 1, :]
@@ -100,11 +100,11 @@ def forces_migration(particles, marr):
 
 
 
-def forces_total(particles, marr):
+def forces_total(particles, marr,t_stop):
     acc_tot = np.zeros((pars.Np, 3))
 
     acc_grav = forces(particles, marr)
-    acc_mig, vrvk = forces_migration(particles, marr, t_stop_conflict)
+    acc_mig, vrvk = forces_migration(particles, marr, t_stop)
 
     acc_tot = acc_grav
     # print 'acc_tot zonder mig:', acc_tot
