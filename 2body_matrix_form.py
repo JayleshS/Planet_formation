@@ -167,7 +167,7 @@ def main():
 	tfinal = 10*pars.yr
 	pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog, vratio = leapfrog(dt, tfinal, tstop, drag=True)
 	# plot_pos(pos_leapfrog)
-	plt.plot(a_leapfrog)
+	plt.plot(vratio)
 	# plt.plot(e_leapfrog)
 	plt.show()
 
