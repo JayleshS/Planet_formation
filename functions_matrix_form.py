@@ -86,7 +86,7 @@ def forces_total(particles, marr, t_stop):
 
     acc_grav = forces(particles, marr)
     acc_mig, vrvk = forces_migration(particles, marr, t_stop)
-
+    print 'hi'
     acc_tot = acc_grav
     acc_tot = acc_grav + acc_mig
     return acc_tot, vrvk
