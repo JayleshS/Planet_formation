@@ -102,9 +102,9 @@ def forces_migration(particles, marr):
 
 def forces_total(particles, marr):
     acc_tot = np.zeros((pars.Np, 3))
-    print "ding"
+
     acc_grav = forces(particles, marr)
-    acc_mig, vrvk = forces_migration(particles, marr, t_stop)
+    acc_mig, vrvk = forces_migration(particles, marr, t_stop_conflict)
 
     acc_tot = acc_grav
     # print 'acc_tot zonder mig:', acc_tot
