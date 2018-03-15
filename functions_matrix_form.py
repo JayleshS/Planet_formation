@@ -9,13 +9,9 @@ def init_2body(ecc):
     marr[0] = pars.mSun
     marr[1] = pars.mEarth
 
-    # vKep = np.sqrt((pars.mEarth+pars.mSun)/pars.a1)
-    # vKep = sqrt((pars.muEarth+pars.muSun)/sqrt((2*pars.au**2)))
     vKep = np.sqrt(pars.gN*(pars.mSun + pars.mEarth) / pars.au)
 
     particles[1,0,:] = [pars.au * (1+ecc), 0., 0.]  # Initial position of 2nd particle
-    # xarr[:, 1] = [pars.au * (1+ecc), 0., .5*pars.au*(1+ecc)]
-
     particles[1,1,:] = [0., vKep * np.sqrt((1-ecc)/(1+ecc)), 0.]  # Initial velocity of 2nd particle
 
     return particles, marr
@@ -25,9 +21,6 @@ def forces(particles, marr):
     for i in range(pars.Np):
         for j in range(i+1, pars.Np):
             rji = particles[j, 0, :] - particles[i, 0, :]
-
-            # acc[i,:] += pars.gN*rji/(sum(rji**2)**(3/2)) * marr[j]
-            # acc[j,:] -= pars.gN*rji/(sum(rji**2)**(3/2)) * marr[i]
             acc[i, :] += pars.gN * rji / (np.sqrt(sum(rji**2)) * sum(rji**2)) * marr[j]
             acc[j, :] -= pars.gN * rji / (np.sqrt(sum(rji**2)) * sum(rji**2)) * marr[i]
 
@@ -43,7 +36,6 @@ def forces_hermite(particles, marr):
             vji = particles[j, 1, :] - particles[i, 1, :]
 
             r2 = sum(rji**2)
-            # print 'r2 =', r2
             r1 = np.sqrt(r2)
             r3 = r1 * r2
             rv = sum(rji * vji)
@@ -55,7 +47,6 @@ def forces_hermite(particles, marr):
             jerk = (vji - 3 * rv * rji) / r3
             jer[i, :] += pars.gN * jerk * marr[j]
             jer[i, :] -= pars.gN * jerk * marr[i]
-            # print acc
 
     return acc, jer
 
@@ -70,11 +61,12 @@ def forces_migration(particles, marr, t_stop):
 
     vKep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
     v_head = vKep *0.4
-    t_stop = rad*1e-5
+    # t_stop = rad*1e-5
 
     v_theta = -np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
     v_r     =  np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
     vrvk = v_r / vKep
+    print v_r
     # print vrvk
     v_gas = (vKep - v_head)
 
