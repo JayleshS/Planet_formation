@@ -162,14 +162,14 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 
 def main():
-	tstop = 1*pars.yr
+	tstop = 10*pars.yr
 	dt = 0.001*pars.yr
 	tfinal = 6*pars.yr
 	pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog, vratio = leapfrog(dt, tfinal, tstop, drag=True)
-	plot_pos(pos_leapfrog)
-	# plt.plot(a_leapfrog)
+	# plot_pos(pos_leapfrog)
+	plt.plot(a_leapfrog)
 	# plt.plot(e_leapfrog)
-	# plt.show()
+	plt.show()
 
 if __name__ == '__main__':
 	main()
