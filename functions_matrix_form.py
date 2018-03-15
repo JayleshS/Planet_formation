@@ -51,7 +51,7 @@ def forces_hermite(particles, marr):
     return acc, jer
 
 
-def forces_migration(particles, marr, t_stop):
+def forces_mongoljonguh(particles, marr, t_stop):
     acc = np.zeros((pars.Np,3))
     rji = particles[1, 0, :] - particles[0, 0, :]
     vji = particles[1, 1, :] - particles[0, 1, :]
@@ -62,6 +62,7 @@ def forces_migration(particles, marr, t_stop):
 
     vKep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
     v_head = vKep *0.4
+    t_stop = rad*1e-5
 
     v_theta = -np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
     v_r     =  np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
@@ -74,8 +75,8 @@ def forces_migration(particles, marr, t_stop):
     F_theta = - (v_theta) / t_stop
     F_r = - v_r / t_stop
 
-    acc[1,0] = np.cos(theta) * F_r - np.sin(theta) * F_theta
-    acc[1,1] = np.sin(theta) * F_r + np.cos(theta) * F_theta
+    acc[1, 0] = np.cos(theta) * F_r - np.sin(theta) * F_theta
+    acc[1, 1] = np.sin(theta) * F_r + np.cos(theta) * F_theta
 
     return acc, vrvk
 
@@ -86,7 +87,6 @@ def forces_total(particles, marr, t_stop):
 
     acc_grav = forces(particles, marr)
     acc_mig, vrvk = forces_migration(particles, marr, t_stop)
-    print 'hi'
     acc_tot = acc_grav
     acc_tot = acc_grav + acc_mig
     return acc_tot, vrvk
