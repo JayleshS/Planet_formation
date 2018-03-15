@@ -2,7 +2,6 @@ import numpy as np
 import pars
 import functions_matrix_form as fn
 import matplotlib.pyplot as plt
-# import matplotlib as mpl
 
 plt.rcParams['axes.linewidth'] = 2   # Create thicker lines around plots
 plt.rcParams['lines.linewidth'] = 2  # Create thicker lines in plots
@@ -56,24 +55,28 @@ def midpoint(dt, tfinal):
 	return x_and_v, e_error
 
 
-def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0):
+def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 	particles, marr = fn.init_2body(init_e)
 	etot0 = fn.e_tot(particles, marr)
+
 	eccentricity = []
 	semi_major_axis = []
-	time = 0
 	x_and_v =[]
+	vratio = []
+
+	time = 0
 
 	while time < tfinal:
 		if drag:
-			acc = fn.forces_total(particles, marr, t_stop)
+			acc, vrvk = fn.forces_total(particles, marr, t_stop)
 		else:
 			acc = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
 		particles[:,0,:] += particles[:,1,:]*dt
+		# print vrvk
 
 		if drag:
-			acc = fn.forces_total(particles, marr, t_stop)
+			acc, vrvk2 = fn.forces_total(particles, marr, t_stop)
 		else:
 			acc = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
@@ -83,13 +86,14 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0):
 
 		eccentricity.append(np.sqrt(sum(ecc)**2))
 		semi_major_axis.append(a)
+		vratio.append(vrvk)
 
 		time += dt
 
-
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
-	return x_and_v, e_error, semi_major_axis, eccentricity
+
+	return x_and_v, e_error, semi_major_axis, eccentricity, vratio
 
 def hermite(dt, tfinal):
 	particles, marr = fn.init_2body(0)
@@ -136,7 +140,6 @@ def plot_pos(particles):
 
 	for planet in range(pars.Np):
 		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1], label=planet)
-	plt.axhline(y=pars.au)
 	plt.legend()
 	plt.xlabel('$x_{pos}$[cm]')
 	plt.ylabel('$y_{pos}$[cm]')
@@ -159,13 +162,14 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 
 def main():
-	tstop = 5*pars.yr
+	tstop = 1*pars.yr
 	dt = 0.001*pars.yr
-	tfinal = 
-	pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog = leapfrog(0.001*pars.yr, 25*pars.yr, tstop, drag=True)
-	# plot_pos(pos_leapfrog)
-	plt.plot(a_leapfrog)
-	plt.show()
+	tfinal = 6*pars.yr
+	pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog, vratio = leapfrog(dt, tfinal, tstop, drag=True)
+	plot_pos(pos_leapfrog)
+	# plt.plot(a_leapfrog)
+	# plt.plot(e_leapfrog)
+	# plt.show()
 
 if __name__ == '__main__':
 	main()
