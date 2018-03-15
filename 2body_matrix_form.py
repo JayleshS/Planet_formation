@@ -164,7 +164,7 @@ def plot_error(timestep, error1, error2, error3, error4):
 def main():
 	tstop = 10*pars.yr
 	dt = 0.001*pars.yr
-	tfinal = 6*pars.yr
+	tfinal = 10*pars.yr
 	pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog, vratio = leapfrog(dt, tfinal, tstop, drag=True)
 	# plot_pos(pos_leapfrog)
 	plt.plot(a_leapfrog)
