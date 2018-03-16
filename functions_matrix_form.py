@@ -60,8 +60,12 @@ def forces_migration(particles, marr, t_stop):
     theta = np.arctan2(rji[1], rji[0])
 
     vKep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
-    v_head = vKep *0.4
+    # v_head = vKep *0.4
+    v_head = 1e5
     # t_stop = rad*1e-5
+    '''See what changes for different t_stop= different factors times rad
+    and constant v_head'''
+    t_stop_try = rad*t_stop
 
     v_theta = -np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
     v_r     =  np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
@@ -72,8 +76,8 @@ def forces_migration(particles, marr, t_stop):
 
     v_theta -= v_gas
 
-    F_theta = - (v_theta) / t_stop
-    F_r     = - v_r / t_stop
+    F_theta = - (v_theta) / t_stop_try
+    F_r     = - v_r / t_stop_try
 
     acc[1, 0] = np.cos(theta) * F_r - np.sin(theta) * F_theta
     acc[1, 1] = np.sin(theta) * F_r + np.cos(theta) * F_theta
@@ -115,8 +119,8 @@ def get_orbital_elements(particles, marr):
     lz = ang[1, 2]
     inc = np.arccos(lz / np.sqrt(sum(ang[1, :]**2)))
 
-    e = (np.cross(vji, ang[1, :]))/(pars.gN*sum(marr)) - (rji/r1)
+    e = (np.cross(vji, ang[1, :])) / (pars.gN*sum(marr)) - (rji/r1)
 
-    a = (sum(ang[1, :]**2))/(pars.gN*sum(marr)*(1-sum(e**2)))
+    a = (sum(ang[1, :]**2)) / (pars.gN*sum(marr)*(1-sum(e**2)))
 
     return e, a
