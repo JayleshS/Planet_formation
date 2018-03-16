@@ -88,6 +88,7 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 		semi_major_axis.append(a)
 		vratio.append(vrvk)
 
+		
 		time += dt
 
 	etot1 = fn.e_tot(particles, marr)
@@ -164,16 +165,16 @@ def plot_error(timestep, error1, error2, error3, error4):
 def main():
 	# tstop = 1*pars.yr
 	dt = 0.001*pars.yr
-	tfinal = 5*pars.yr    # v_head = vKep *0.4
+	tfinal = 50*pars.yr    # v_head = vKep *0.4
 
-	t_stop_factors= [1e-5,1e-6,1e-7,1e-8,1e-9]
+	t_stop_factors= [1e-5]#,1e-6,1e-7,1e-8,1e-9]
 	for tstop in t_stop_factors:
 
-		plt.title("tstop_factor = "+ str(tstop))
 		pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog, vratio = leapfrog(dt, tfinal, tstop, drag=True)
-		plot_pos(pos_leapfrog)
-		# plt.plot(vratio)
-		plt.plot(e_leapfrog)
+		# plot_pos(pos_leapfrog)
+		plt.plot(a_leapfrog, label="timestop_factor = "+ str(tstop))
+		# plt.plot(e_leapfrog, label="timestop_factor = "+ str(tstop))
+	plt.legend()
 	plt.show()
 
 if __name__ == '__main__':
