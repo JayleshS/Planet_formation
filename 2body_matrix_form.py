@@ -62,20 +62,20 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 	eccentricity = []
 	semi_major_axis = []
 	x_and_v =[]
+	vkeps = []
 
 	time = 0
-	i = 0
 
 	while time < tfinal:
 		if drag:
-			acc = fn.forces_total(particles, marr, t_stop)
+			acc, vKep = fn.forces_total(particles, marr, t_stop)
 		else:
 			acc = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
 		particles[:,0,:] += particles[:,1,:]*dt
 
 		if drag:
-			acc = fn.forces_total(particles, marr, t_stop)
+			acc, vKep = fn.forces_total(particles, marr, t_stop)
 		else:
 			acc = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
@@ -85,15 +85,15 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 
 		eccentricity.append(np.sqrt(sum(ecc)**2))
 		semi_major_axis.append(a)
+		vkeps.append(vKep)
 		
 
 		time += dt
-		i += 1
 
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
 
-	return x_and_v, e_error, semi_major_axis, eccentricity
+	return x_and_v, e_error, semi_major_axis, eccentricity, vkeps
 
 def hermite(dt, tfinal):
 	particles, marr = fn.init_2body(0)
@@ -166,20 +166,24 @@ def main():
 	dt = 0.001*pars.yr
 	tfinal = 10*pars.yr    # v_head = vKep *0.4
 
+	calc_step = 10
+
 	t_stop_factors= [1e-5,1e-6,1e-7,1e-8,1e-9]
-	t_stop_factors=[1e-6]
+	t_stop_factors=[1e-5]
 	# t_stop_factors = np.geomspace(1e-5, 1e-8, num=10)
 	for tstop in t_stop_factors:
 		print 'calculating', tstop
 
 		plt.title("tstop_factor = "+ str(tstop))
-		pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog = leapfrog(dt, tfinal, tstop, drag=True)
+		pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog, vkep = leapfrog(dt, tfinal, tstop, drag=True)
 
 		a_array = np.array(a_leapfrog)
-		delta_a = a_array[1::10] - a_array[0:-1:10]
-		plt.plot(delta_a)
+		delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
+		delta_vkep = vkep[0::calc_step]
+		plt.plot(delta_a/delta_vkep)
 		# plot_pos(pos_leapfrog)
 		# plt.plot(a_leapfrog, label=tstop)
+		# plt.plot(vkep)
 	# plt.legend()
 	plt.show()
 

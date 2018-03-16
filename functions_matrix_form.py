@@ -80,7 +80,7 @@ def forces_migration(particles, marr, t_stop):
     acc[1, 0] = np.cos(theta) * F_r - np.sin(theta) * F_theta
     acc[1, 1] = np.sin(theta) * F_r + np.cos(theta) * F_theta
 
-    return acc
+    return acc, vKep
 
 
 
@@ -88,9 +88,9 @@ def forces_total(particles, marr,t_stop):
     acc_tot = np.zeros((pars.Np, 3))
 
     acc_grav = forces(particles, marr)
-    acc_mig = forces_migration(particles, marr, t_stop)
+    acc_mig, vKep = forces_migration(particles, marr, t_stop)
     acc_tot = acc_grav + acc_mig
-    return acc_tot
+    return acc_tot, vKep
 
 
 
