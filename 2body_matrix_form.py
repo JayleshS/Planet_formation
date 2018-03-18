@@ -89,8 +89,11 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 		semi_major_axis.append(a)
 		vkeps.append(vKep)
 
+		'''Adaptive timesteps, by taking P = sqrt(4 pi^2 * a^3 / GM) ~ a^(3/2)'''
+		time += dt * (abs(a/pars.au))**(3/2.)
+		# time += dt
 
-		time += dt
+	# print a/pars.au
 
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
@@ -165,28 +168,34 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 def main():
 	# tstop = 1*pars.yr
-	dt = 0.001*pars.yr
-	tfinal = 10*pars.yr    # v_head = vKep *0.4
+	dt = 0.01*pars.yr
+	tfinal = 100*pars.yr    # v_head = vKep *0.4
 
 	calc_step = 10
 
-	t_stop_factors= [1e-5,1e-6,1e-7,1e-8,1e-9]
-	t_stop_factors=[1e-5]
+    '''1e-9 is heel raar'''
+	t_stop_factors= [1e-5,1e-6,1e-7,1e-8]
+	# t_stop_factors=[1e-9]
 	# t_stop_factors = np.geomspace(1e-5, 1e-8, num=10)
 	for tstop in t_stop_factors:
 		print 'calculating', tstop
 
 		plt.title("tstop_factor = "+ str(tstop))
-		pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog, vkep = leapfrog(dt, tfinal, tstop, drag=True)
+		pos_leapfrog,_,a_leapfrog,_,_ = leapfrog(dt, tfinal, tstop, drag=True)
+		# pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog, vkep = leapfrog(dt, tfinal, tstop, drag=True)
 
-		a_array = np.array(a_leapfrog)
-		delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
-		delta_vkep = vkep[0::calc_step]
-		plt.plot(delta_a/delta_vkep)
+
+		# a_array = np.array(a_leapfrog)
+		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
+		# delta_vkep = vkep[0::calc_step]
+		# plt.plot(delta_a/delta_vkep)
 		# plot_pos(pos_leapfrog)
-		# plt.plot(a_leapfrog, label=tstop)
+		# plt.show()
+		plt.plot(a_leapfrog, label=tstop)
+		plt.xscale("Log")
+        plt.yscale("Log")
 		# plt.plot(vkep)
-	# plt.legend()
+	plt.legend()
 	plt.show()
 
 if __name__ == '__main__':
