@@ -195,7 +195,7 @@ def main():
 		# plt.show()
 		# plt.plot(time/pars.yr, a_leapfrog, label='{:0.2e}'.format(tstop))
 		# plt.xscale("Log")
-  #       plt.yscale("Log")
+        # plt.yscale("Log")
 		# plt.plot(vkep)
 		# plt.plot(a_leapfrog, label=tstop)
 		# plt.xscale("Log")
