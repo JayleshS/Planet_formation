@@ -171,9 +171,9 @@ def main():
 	calc_step = 10
 	omega_k = (2*np.pi)/pars.yr
 
-	t_stop_vals= [1e-2]#,1e-6,1e-7,1e-8]
-	# t_stop_vals = np.geomspace(3e-3, 3e3, num=10)
-	for tau in t_stop_vals:
+	tau_vals= [1e-2]#,1e-6,1e-7,1e-8]
+	# tau_vals = np.geomspace(3e-3, 3e3, num=10)
+	for tau in tau_vals:
 		print 'calculating', tau
 		pos_leapfrog,_,a_leapfrog,_,_,time = leapfrog(dt, tfinal, tau, drag=True)
 		# a_array = np.array(a_leapfrog)
