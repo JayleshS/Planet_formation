@@ -72,6 +72,7 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 			acc, vKep = fn.forces_total(particles, marr, t_stop)
 		else:
 			acc = fn.forces(particles, marr)
+			vKep=[]
 		particles[:,1,:] += acc* dt/2
 		particles[:,0,:] += particles[:,1,:]*dt
 
@@ -174,34 +175,37 @@ def main():
 	calc_step = 10
 	omega_k = (2*np.pi)/pars.yr
 
-	# t_stop_factors= [1e-5,1e-6,1e-7,1e-8]
-	# t_stop_factors=[1e-6]
-	# t_stop_factors = np.geomspace(1e-2, 1e2, num=8)*omega_k
-	t_stop_factors = [1e-6]
+
+	t_stop_factors= [5e-6]#,1e-6,1e-7,1e-8]
+	# t_stop_factors=[2*np.pi/pars.yr]
+	# t_stop_factors = np.geomspace(1e-5, 1e-8, num=8)
 	for tstop in t_stop_factors:
 		print 'calculating', tstop
 
 		# plt.title("tstop_factor = "+ str(tstop))
-		pos_leapfrog,_,a_leapfrog,_,vkep,time = leapfrog(dt, tfinal, tstop, drag=True)
+		pos_leapfrog,_,a_leapfrog,_,_,time = leapfrog(dt, tfinal, tstop, drag=True)
+		# time_arr = np.array(pos_leapfrog)
 		# print pos_leapfrog
 		# time = time_arr[:, 0, 0, 0]
 		# print time
 
 		# pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog, vkep = leapfrog(dt, tfinal, tstop, drag=True)
 
-
 		# a_array = np.array(a_leapfrog)
 		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
 		# delta_vkep = vkep[0::calc_step]
-		# plt.plot(delta_a/delta_vkep[:-1], label='{:0.2e}'.format(tstop))
+		# plt.plot(delta_a/delta_vkep)
 		plot_pos(pos_leapfrog)
 		# plt.show()
-		# plt.plot(time/pars.yr, a_leapfrog, label='{:0.2e}'.format(tstop/omega_k))
+		# plt.plot(time/pars.yr, a_leapfrog, label='{:0.2e}'.format(tstop))
 		# plt.xscale("Log")
   #       plt.yscale("Log")
 		# plt.plot(vkep)
-	# plt.legend()
-	# plt.show()
+		# plt.plot(a_leapfrog, label=tstop)
+		# plt.xscale("Log")
+        # plt.yscale("Log")
+	plt.legend()
+	plt.show()
 
 if __name__ == '__main__':
 	main()
