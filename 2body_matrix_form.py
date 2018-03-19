@@ -184,10 +184,6 @@ def main():
 
 		# plt.title("tstop_factor = "+ str(tstop))
 		pos_leapfrog,_,a_leapfrog,_,_,time = leapfrog(dt, tfinal, tstop, drag=True)
-		# time_arr = np.array(pos_leapfrog)
-		# print pos_leapfrog
-		# time = time_arr[:, 0, 0, 0]
-		# print time
 
 		# pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog, vkep = leapfrog(dt, tfinal, tstop, drag=True)
 
