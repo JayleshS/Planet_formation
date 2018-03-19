@@ -59,43 +59,16 @@ def forces_migration(particles, marr, t_stop):
     rad = np.sqrt(rji[0]**2 + rji[1]**2)
     theta = np.arctan2(rji[1], rji[0])
 
-    v_kep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
-    # v_head = v_kep *0.4
+    v_kep  = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
     v_head = 1e6
-    # t_stop = rad*1e-5
 
-    t_stop_factor = t_stop/(2978469./pars.au)#rad*t_stop
+    t_stop_factor = t_stop / (v_kep / rad)
 
-    v_gas = np.zeros(3)
-
-    v_theta = np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
-    v_r     = np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
-
+    v_gas    = np.zeros(3)
     v_gas[0] = -np.sin(theta) * (v_kep - v_head)
     v_gas[1] =  np.cos(theta) * (v_kep - v_head)
 
     acc[1,:] = - ( vji - v_gas) / t_stop_factor
-
-
-
-
-    # v_theta = np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
-    # v_r     = np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
-    #
-    # v_gas = (v_kep - v_head)
-    #
-    # v_theta -= v_gas
-    #
-    # F_theta = - (v_theta) / t_stop_factor
-    # F_r     = - v_r / t_stop_factor
-
-    # acc[1, 0] = np.cos(theta) * F_r - np.sin(theta) * F_theta
-    # acc[1, 1] = np.sin(theta) * F_r + np.cos(theta) * F_theta
-
-
-    # acc[1, 0] = np.sin(theta) * F_theta
-    # acc[1, 1] = np.cos(theta) * F_theta
-
 
     return acc, v_kep
 

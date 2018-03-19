@@ -62,44 +62,40 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 	eccentricity = []
 	semi_major_axis = []
 	x_and_v =[]
-	vkeps = []
+	vkep_list = []
 	time_list = []
 
 	time = 0
 
 	while time < tfinal:
 		if drag:
-			acc, vKep = fn.forces_total(particles, marr, t_stop)
+			acc, v_kep = fn.forces_total(particles, marr, t_stop)
 		else:
 			acc = fn.forces(particles, marr)
-			vKep=[]
+			v_kep=[]
 		particles[:,1,:] += acc* dt/2
 		particles[:,0,:] += particles[:,1,:]*dt
 
 		if drag:
-			acc, vKep = fn.forces_total(particles, marr, t_stop)
+			acc, v_kep = fn.forces_total(particles, marr, t_stop)
 		else:
 			acc = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
 
 		x_and_v.append(particles.tolist())
 		ecc, a = fn.get_orbital_elements(particles, marr)
-		# if a < 0.046*pars.au:
-		# 	break
 
 		eccentricity.append(np.sqrt(sum(ecc)**2))
 		semi_major_axis.append(a)
-		vkeps.append(vKep)
+		vkep_list.append(v_kep)
 		time_list.append(time)
 
 		time += dt
 
-	# print a/pars.au
-
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
 
-	return x_and_v, e_error, semi_major_axis, eccentricity, vkeps, time_list
+	return x_and_v, e_error, semi_major_axis, eccentricity, vkep_list, time_list
 
 def hermite(dt, tfinal):
 	particles, marr = fn.init_2body(0)
@@ -174,21 +170,19 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 
 def main():
-	# tstop = 1*pars.yr
+
 	dt = 0.001*pars.yr
-	tfinal = 30*pars.yr    # v_head = vKep *0.4
+	tfinal = 30*pars.yr
 
 	calc_step = 10
 	omega_k = (2*np.pi)/pars.yr
 
 
 	t_stop_factors= [1e1]#,1e-6,1e-7,1e-8]
-	# t_stop_factors=[2*np.pi/pars.yr]
-	# t_stop_factors = np.geomspace(1e-2, 1e-2, num=5)
+	# t_stop_factors = np.geomspace(1e-2, 1e2, num=10)
 	for tstop in t_stop_factors:
 		print 'calculating', tstop
 
-		plt.title("tstop_factor = "+ str(tstop))
 		_,_,a_leapfrog,_,_,time = leapfrog(dt, tfinal, tstop, drag=True)
 
 		# a_array = np.array(a_leapfrog)
