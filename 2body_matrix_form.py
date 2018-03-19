@@ -55,7 +55,7 @@ def midpoint(dt, tfinal):
 	return x_and_v, e_error
 
 
-def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
+def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 	particles, marr = fn.init_2body(init_e)
 	etot0 = fn.e_tot(particles, marr)
 
@@ -64,12 +64,14 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 	x_and_v =[]
 	vkep_list = []
 	time_list = []
+	save_matrix = np.array([])
 
 	time = 0
+	i=0
 
 	while time < tfinal:
 		if drag:
-			acc, v_kep = fn.forces_total(particles, marr, t_stop)
+			acc, v_kep = fn.forces_total(particles, marr, tau)
 		else:
 			acc = fn.forces(particles, marr)
 			v_kep=[]
@@ -77,7 +79,7 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 		particles[:,0,:] += particles[:,1,:]*dt
 
 		if drag:
-			acc, v_kep = fn.forces_total(particles, marr, t_stop)
+			acc, v_kep = fn.forces_total(particles, marr, tau)
 		else:
 			acc = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
@@ -85,12 +87,23 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 		x_and_v.append(particles.tolist())
 		ecc, a = fn.get_orbital_elements(particles, marr)
 
+		# print np.append(np.zeros(1), a)
+		# dingenenzo =  np.insert(save_matrix, i,a)
+		#
+		# save_matrix =  np.insert(save_matrix, i,a)
+		#
+		#
+		# print save_matrix
+		# print dingenenzo
+
+
 		eccentricity.append(np.sqrt(sum(ecc)**2))
 		semi_major_axis.append(a)
 		vkep_list.append(v_kep)
 		time_list.append(time)
 
 		time += dt
+		i+=1
 
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
@@ -143,13 +156,13 @@ def plot_pos(particles):
 	for planet in range(pars.Np):
 		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1], label=planet)
 	plt.scatter(0,0, c="y")
-	plt.scatter(pars.au,0, c="b")
+	plt.scatter(1.,0, c="b")
 
 	plt.legend()
-	plt.xlabel('$x_{pos}$[cm]')
-	plt.ylabel('$y_{pos}$[cm]')
-	plt.xlim(-1.5*pars.au, 1.5*pars.au)
-	plt.ylim(-1.5*pars.au, 1.5*pars.au)
+	plt.xlabel('$x_{pos}$[AU]')
+	plt.ylabel('$y_{pos}$[AU]')
+	# plt.xlim(-1.5, 1.5)
+	# plt.ylim(-1.5, 1.5)
 
 	# plt.show()
 
@@ -170,20 +183,18 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 
 def main():
-
-	dt = 0.001*pars.yr
-	tfinal = 30*pars.yr
+	dt     = 0.001
+	tfinal = 0.005
 
 	calc_step = 10
-	omega_k = (2*np.pi)/pars.yr
+	omega_k = (2*np.pi)
 
+	tau_vals= [1]
+	# tau_vals = np.geomspace(3e-3, 3e3, num=10)
+	for tau in tau_vals:
+		print 'calculating', tau
 
-	t_stop_factors= [1e1]#,1e-6,1e-7,1e-8]
-	# t_stop_factors = np.geomspace(1e-2, 1e2, num=10)
-	for tstop in t_stop_factors:
-		print 'calculating', tstop
-
-		_,_,a_leapfrog,_,_,time = leapfrog(dt, tfinal, tstop, drag=True)
+		pos_leapfrog,_,a_leapfrog,_,_,time = leapfrog(dt, tfinal, tau, drag=True)
 
 		# a_array = np.array(a_leapfrog)
 		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
@@ -191,12 +202,12 @@ def main():
 		# plt.plot(delta_a/delta_vkep)
 		# plot_pos(pos_leapfrog)
 		# plt.show()
-		plt.plot(time/pars.yr, a_leapfrog, label='{:0.2e}'.format(tstop))
+		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
 		# plt.xscale("Log")
         # plt.yscale("Log")
 
-	plt.legend()
-	plt.show()
+	# plt.legend()
+	# plt.show()
 
 if __name__ == '__main__':
 	main()
