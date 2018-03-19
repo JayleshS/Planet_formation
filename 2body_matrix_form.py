@@ -63,6 +63,7 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 	semi_major_axis = []
 	x_and_v =[]
 	vkeps = []
+	time_list = []
 
 	time = 0
 
@@ -88,17 +89,18 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 		eccentricity.append(np.sqrt(sum(ecc)**2))
 		semi_major_axis.append(a)
 		vkeps.append(vKep)
+		time_list.append(time)
 
 		'''Adaptive timesteps, by taking P = sqrt(4 pi^2 * a^3 / GM) ~ a^(3/2)'''
-		time += dt * (abs(a/pars.au))**(3/2.)
-		# time += dt
+		# time += dt * (abs(a/pars.au))**(3/2.)
+		time += dt
 
 	# print a/pars.au
 
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
 
-	return x_and_v, e_error, semi_major_axis, eccentricity, vkeps
+	return x_and_v, e_error, semi_major_axis, eccentricity, vkeps, time_list
 
 def hermite(dt, tfinal):
 	particles, marr = fn.init_2body(0)
@@ -168,20 +170,24 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 def main():
 	# tstop = 1*pars.yr
-	dt = 0.01*pars.yr
-	tfinal = 100*pars.yr    # v_head = vKep *0.4
+	dt = 0.001*pars.yr
+	tfinal = 5*pars.yr    # v_head = vKep *0.4
 
 	calc_step = 10
 
-    '''1e-9 is heel raar'''
-	t_stop_factors= [1e-5,1e-6,1e-7,1e-8]
-	# t_stop_factors=[1e-9]
-	# t_stop_factors = np.geomspace(1e-5, 1e-8, num=10)
+	# t_stop_factors= [1e-5,1e-6,1e-7,1e-8]
+	t_stop_factors=[1e-6]
+	# t_stop_factors = np.geomspace(1e-6, 1e-8, num=5)
 	for tstop in t_stop_factors:
 		print 'calculating', tstop
 
-		plt.title("tstop_factor = "+ str(tstop))
-		pos_leapfrog,_,a_leapfrog,_,_ = leapfrog(dt, tfinal, tstop, drag=True)
+		# plt.title("tstop_factor = "+ str(tstop))
+		pos_leapfrog,_,a_leapfrog,_,_,time = leapfrog(dt, tfinal, tstop, drag=True)
+		time_arr = np.array(pos_leapfrog)
+		# print pos_leapfrog
+		# time = time_arr[:, 0, 0, 0]
+		# print time
+
 		# pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog, vkep = leapfrog(dt, tfinal, tstop, drag=True)
 
 
@@ -191,9 +197,9 @@ def main():
 		# plt.plot(delta_a/delta_vkep)
 		# plot_pos(pos_leapfrog)
 		# plt.show()
-		plt.plot(a_leapfrog, label=tstop)
-		plt.xscale("Log")
-        plt.yscale("Log")
+		plt.plot(time/pars.yr, a_leapfrog, label='{:0.2e}'.format(tstop))
+		# plt.xscale("Log")
+  #       plt.yscale("Log")
 		# plt.plot(vkep)
 	plt.legend()
 	plt.show()
