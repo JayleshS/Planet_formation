@@ -148,9 +148,15 @@ def plot_pos(particles):
 
 	for planet in range(pars.Np):
 		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1], label=planet)
+	plt.scatter(0,0, c="y")
+	plt.scatter(pars.au,0, c="b")
+
 	plt.legend()
 	plt.xlabel('$x_{pos}$[cm]')
 	plt.ylabel('$y_{pos}$[cm]')
+	plt.xlim(-1.5*pars.au, 1.5*pars.au)
+	plt.ylim(-1.5*pars.au, 1.5*pars.au)
+
 	# plt.show()
 
 
@@ -171,39 +177,30 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 def main():
 	# tstop = 1*pars.yr
-	dt = 0.001*pars.yr
-	tfinal = 5*pars.yr    # v_head = vKep *0.4
+	dt = 0.0001*pars.yr
+	tfinal = 30*pars.yr    # v_head = vKep *0.4
 
 	calc_step = 10
 
-	t_stop_factors= [5e-6]#,1e-6,1e-7,1e-8]
+	# t_stop_factors= [1e3]#,1e-6,1e-7,1e-8]
 	# t_stop_factors=[2*np.pi/pars.yr]
-	# t_stop_factors = np.geomspace(1e-5, 1e-8, num=8)
+	t_stop_factors = np.geomspace(1e-2, 1e-2, num=5)
 	for tstop in t_stop_factors:
 		print 'calculating', tstop
 
-		# plt.title("tstop_factor = "+ str(tstop))
-		pos_leapfrog,_,a_leapfrog,_,_,time = leapfrog(dt, tfinal, tstop, drag=True)
-		# time_arr = np.array(pos_leapfrog)
-		# print pos_leapfrog
-		# time = time_arr[:, 0, 0, 0]
-		# print time
-
-		# pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog, vkep = leapfrog(dt, tfinal, tstop, drag=True)
+		plt.title("tstop_factor = "+ str(tstop))
+		_,_,a_leapfrog,_,_,time = leapfrog(dt, tfinal, tstop, drag=True)
 
 		# a_array = np.array(a_leapfrog)
 		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
 		# delta_vkep = vkep[0::calc_step]
 		# plt.plot(delta_a/delta_vkep)
-		plot_pos(pos_leapfrog)
+		# plot_pos(pos_leapfrog)
 		# plt.show()
-		# plt.plot(time/pars.yr, a_leapfrog, label='{:0.2e}'.format(tstop))
-		# plt.xscale("Log")
-  #       plt.yscale("Log")
-		# plt.plot(vkep)
-		# plt.plot(a_leapfrog, label=tstop)
+		plt.plot(time/pars.yr, a_leapfrog, label='{:0.2e}'.format(tstop))
 		# plt.xscale("Log")
         # plt.yscale("Log")
+
 	plt.legend()
 	plt.show()
 

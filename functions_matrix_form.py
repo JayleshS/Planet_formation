@@ -9,10 +9,10 @@ def init_2body(ecc):
     marr[0] = pars.mSun
     marr[1] = pars.mEarth
 
-    vKep = np.sqrt(pars.gN*(pars.mSun + pars.mEarth) / pars.au)
+    v_kep = np.sqrt(pars.gN*(pars.mSun + pars.mEarth) / pars.au)
 
     particles[1,0,:] = [pars.au * (1+ecc), 0., 0.]  # Initial position of 2nd particle
-    particles[1,1,:] = [0., vKep * np.sqrt((1-ecc)/(1+ecc)), 0.]  # Initial velocity of 2nd particle
+    particles[1,1,:] = [0., v_kep * np.sqrt((1-ecc)/(1+ecc)), 0.]  # Initial velocity of 2nd particle
 
     return particles, marr
 
@@ -59,31 +59,41 @@ def forces_migration(particles, marr, t_stop):
     rad = np.sqrt(rji[0]**2 + rji[1]**2)
     theta = np.arctan2(rji[1], rji[0])
 
-    vKep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
-    # v_head = vKep *0.4
-    v_head = 1e5
+    v_kep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
+    # v_head = v_kep *0.4
+    v_head = 1e6
     # t_stop = rad*1e-5
 
-    t_stop_factor = 1e-2* 1/(2978469./pars.au)#rad*t_stop
+    t_stop_factor = t_stop/(2978469./pars.au)#rad*t_stop
 
-    v_theta = -np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
-    v_r     =  np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
+    v_gas = np.zeros(3)
 
-    v_gas = (vKep - v_head)
+    v_gas[0] = -np.sin(theta) * (v_kep - v_head)
+    v_gas[1] =  np.cos(theta) * (v_kep - v_head)
 
-    v_theta -= v_gas
+    acc[1,:] = - ( vji - v_gas) / t_stop_factor
 
-    F_theta = - (v_theta) / t_stop_factor
+
+
+
+    # v_theta = np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
+    # v_r     = np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
+    #
+    # v_gas = (v_kep - v_head)
+    #
+    # v_theta -= v_gas
+    #
+    # F_theta = - (v_theta) / t_stop_factor
     # F_r     = - v_r / t_stop_factor
 
     # acc[1, 0] = np.cos(theta) * F_r - np.sin(theta) * F_theta
     # acc[1, 1] = np.sin(theta) * F_r + np.cos(theta) * F_theta
 
 
-    acc[1, 0] = np.sin(theta) * F_theta
-    acc[1, 1] = np.cos(theta) * F_theta
+    # acc[1, 0] = np.sin(theta) * F_theta
+    # acc[1, 1] = np.cos(theta) * F_theta
 
-    return acc, vKep
+    return acc, v_kep
 
 
 
@@ -91,14 +101,11 @@ def forces_total(particles, marr,t_stop):
     acc_tot = np.zeros((pars.Np, 3))
 
     acc_grav = forces(particles, marr)
-    acc_mig, vKep = forces_migration(particles, marr, t_stop)
+    acc_mig, v_kep = forces_migration(particles, marr, t_stop)
     acc_tot = acc_grav + acc_mig
 
 
-    print acc_grav
-    print acc_mig
-    print acc_tot
-    return acc_tot, vKep
+    return acc_tot, v_kep
 
 
 
