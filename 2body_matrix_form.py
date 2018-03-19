@@ -169,33 +169,33 @@ def plot_error(timestep, error1, error2, error3, error4):
 def main():
 	# tstop = 1*pars.yr
 	dt = 0.01*pars.yr
-	tfinal = 100*pars.yr    # v_head = vKep *0.4
+	tfinal = 80*pars.yr    # v_head = vKep *0.4
 
 	calc_step = 10
 
 	t_stop_factors= [1e-5,1e-6,1e-7,1e-8] #######################   1e-9 is heel raar
-	# t_stop_factors=[1e-9]
-	# t_stop_factors = np.geomspace(1e-5, 1e-8, num=10)
+	t_stop_factors=[1e-8]
+	# t_stop_factors = np.geomspace(1e-7, 1e-8, num=10)
 	for tstop in t_stop_factors:
 		print 'calculating', tstop
 
 		plt.title("tstop_factor = "+ str(tstop))
 		pos_leapfrog,_,a_leapfrog,_,_ = leapfrog(dt, tfinal, tstop, drag=True)
 		# pos_leapfrog, error_leapfrog, a_leapfrog, e_leapfrog, vkep = leapfrog(dt, tfinal, tstop, drag=True)
-
+		print len(pos_leapfrog)
 
 		# a_array = np.array(a_leapfrog)
 		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
 		# delta_vkep = vkep[0::calc_step]
 		# plt.plot(delta_a/delta_vkep)
-		plot_pos(pos_leapfrog)
-		plt.show()
+		# plot_pos(pos_leapfrog)
+		# plt.show()
+		# plt.plot(vkep)
 		# plt.plot(a_leapfrog, label=tstop)
 		# plt.xscale("Log")
         # plt.yscale("Log")
-		# plt.plot(vkep)
-	plt.legend()
-	plt.show()
+	# plt.legend()
+	# plt.show()
 
 if __name__ == '__main__':
 	main()
