@@ -83,11 +83,11 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 		particles[:,1,:] += acc* dt/2
 
 		x_and_v.append(particles.tolist())
-		# ecc, a = fn.get_orbital_elements(particles, marr)
+		ecc, a = fn.get_orbital_elements(particles, marr)
 		# if a < 0.046*pars.au:
 		# 	break
 
-		# eccentricity.append(np.sqrt(sum(ecc)**2))
+		eccentricity.append(np.sqrt(sum(ecc)**2))
 		semi_major_axis.append(a)
 		vkeps.append(vKep)
 		time_list.append(time)
@@ -175,16 +175,16 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 def main():
 	# tstop = 1*pars.yr
-	dt = 0.0001*pars.yr
+	dt = 0.001*pars.yr
 	tfinal = 30*pars.yr    # v_head = vKep *0.4
 
 	calc_step = 10
 	omega_k = (2*np.pi)/pars.yr
 
 
-	# t_stop_factors= [1e3]#,1e-6,1e-7,1e-8]
+	t_stop_factors= [1e1]#,1e-6,1e-7,1e-8]
 	# t_stop_factors=[2*np.pi/pars.yr]
-	t_stop_factors = np.geomspace(1e-2, 1e-2, num=5)
+	# t_stop_factors = np.geomspace(1e-2, 1e-2, num=5)
 	for tstop in t_stop_factors:
 		print 'calculating', tstop
 
