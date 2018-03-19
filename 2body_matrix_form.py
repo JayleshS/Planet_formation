@@ -82,7 +82,7 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 		particles[:,1,:] += acc* dt/2
 
 		x_and_v.append(particles.tolist())
-		ecc, a = fn.get_orbital_elements(particles, marr)
+		# ecc, a = fn.get_orbital_elements(particles, marr)
 		# if a < 0.046*pars.au:
 		# 	break
 
@@ -91,8 +91,6 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 		vkeps.append(vKep)
 		time_list.append(time)
 
-		'''Adaptive timesteps, by taking P = sqrt(4 pi^2 * a^3 / GM) ~ a^(3/2)'''
-		# time += dt * (abs(a/pars.au))**(3/2.)
 		time += dt
 
 	# print a/pars.au
@@ -150,7 +148,7 @@ def plot_pos(particles):
 	plt.legend()
 	plt.xlabel('$x_{pos}$[cm]')
 	plt.ylabel('$y_{pos}$[cm]')
-	# plt.show()
+	plt.show()
 
 
 def plot_error(timestep, error1, error2, error3, error4):
@@ -171,19 +169,20 @@ def plot_error(timestep, error1, error2, error3, error4):
 def main():
 	# tstop = 1*pars.yr
 	dt = 0.001*pars.yr
-	tfinal = 5*pars.yr    # v_head = vKep *0.4
+	tfinal = 10*pars.yr    # v_head = vKep *0.4
 
 	calc_step = 10
+	omega_k = (2*np.pi)/pars.yr
 
 	# t_stop_factors= [1e-5,1e-6,1e-7,1e-8]
-	t_stop_factors=[1e-6]
-	# t_stop_factors = np.geomspace(1e-6, 1e-8, num=5)
+	# t_stop_factors=[1e-6]
+	# t_stop_factors = np.geomspace(1e-2, 1e2, num=8)*omega_k
+	t_stop_factors = [1e-6]
 	for tstop in t_stop_factors:
 		print 'calculating', tstop
 
 		# plt.title("tstop_factor = "+ str(tstop))
-		pos_leapfrog,_,a_leapfrog,_,_,time = leapfrog(dt, tfinal, tstop, drag=True)
-		time_arr = np.array(pos_leapfrog)
+		pos_leapfrog,_,a_leapfrog,_,vkep,time = leapfrog(dt, tfinal, tstop, drag=True)
 		# print pos_leapfrog
 		# time = time_arr[:, 0, 0, 0]
 		# print time
@@ -194,15 +193,15 @@ def main():
 		# a_array = np.array(a_leapfrog)
 		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
 		# delta_vkep = vkep[0::calc_step]
-		# plt.plot(delta_a/delta_vkep)
-		# plot_pos(pos_leapfrog)
+		# plt.plot(delta_a/delta_vkep[:-1], label='{:0.2e}'.format(tstop))
+		plot_pos(pos_leapfrog)
 		# plt.show()
-		plt.plot(time/pars.yr, a_leapfrog, label='{:0.2e}'.format(tstop))
+		# plt.plot(time/pars.yr, a_leapfrog, label='{:0.2e}'.format(tstop/omega_k))
 		# plt.xscale("Log")
   #       plt.yscale("Log")
 		# plt.plot(vkep)
-	plt.legend()
-	plt.show()
+	# plt.legend()
+	# plt.show()
 
 if __name__ == '__main__':
 	main()

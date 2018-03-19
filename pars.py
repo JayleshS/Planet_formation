@@ -9,4 +9,3 @@ yr = 2*np.pi /np.sqrt(gN*mSun/au**3) #1 year in seconds
 
 #problem parameters
 Np = 2 #2 particles
-

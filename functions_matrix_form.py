@@ -64,20 +64,19 @@ def forces_migration(particles, marr, t_stop):
     v_head = 1e5
     # t_stop = rad*1e-5
 
-    t_stop_factor = rad*t_stop
+    t_stop_factor = t_stop
 
-    v_theta = -np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
-    v_r     =  np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
+    v_theta = np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
+    v_r     = np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
 
     v_gas = (vKep - v_head)
 
     v_theta -= v_gas
 
     F_theta = - (v_theta) / t_stop_factor
-    F_r     = - v_r / t_stop_factor
 
-    acc[1, 0] = np.cos(theta) * F_r - np.sin(theta) * F_theta
-    acc[1, 1] = np.sin(theta) * F_r + np.cos(theta) * F_theta
+    acc[1, 0] = np.sin(theta) * F_theta
+    acc[1, 1] = np.cos(theta) * F_theta
 
     return acc, vKep
 
