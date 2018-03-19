@@ -64,11 +64,7 @@ def forces_migration(particles, marr, t_stop):
     v_head = 1e5
     # t_stop = rad*1e-5
 
-<<<<<<< HEAD
-    t_stop_factor = t_stop
-=======
     t_stop_factor = 1e-2* 1/(2978469./pars.au)#rad*t_stop
->>>>>>> 7248de4642d159adfd2d35cde22f480017c5383b
 
     v_theta = np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
     v_r     = np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
@@ -78,16 +74,7 @@ def forces_migration(particles, marr, t_stop):
     v_theta -= v_gas
 
     F_theta = - (v_theta) / t_stop_factor
-<<<<<<< HEAD
 
-=======
-    # F_r     = - v_r / t_stop_factor
-
-    # acc[1, 0] = np.cos(theta) * F_r - np.sin(theta) * F_theta
-    # acc[1, 1] = np.sin(theta) * F_r + np.cos(theta) * F_theta
-
-
->>>>>>> 7248de4642d159adfd2d35cde22f480017c5383b
     acc[1, 0] = np.sin(theta) * F_theta
     acc[1, 1] = np.cos(theta) * F_theta
 
@@ -138,16 +125,3 @@ def get_orbital_elements(particles, marr):
     a = (sum(ang[1, :]**2)) / (pars.gN*sum(marr)*(1-sum(e**2)))
 
     return e, a
-<<<<<<< HEAD
-
-def calc_vr(particles):
-    rji = particles[1, 0, :] - particles[0, 0, :]
-    vji = particles[1, 1, :] - particles[0, 1, :]
-
-    # Convert to cylindrical coordinates
-    rad = np.sqrt(rji[0]**2 + rji[1]**2)
-    theta = np.arctan2(rji[1], rji[0])
-
-    v_r = np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
-=======
->>>>>>> 7248de4642d159adfd2d35cde22f480017c5383b
