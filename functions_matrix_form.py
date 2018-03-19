@@ -50,7 +50,7 @@ def forces_hermite(particles, marr):
 
     return acc, jer
 
-def forces_migration(particles, marr, t_stop):
+def forces_migration(particles, marr, tau):
     acc = np.zeros((pars.Np,3))
     rji = particles[1, 0, :] - particles[0, 0, :]
     vji = particles[1, 1, :] - particles[0, 1, :]
@@ -59,32 +59,33 @@ def forces_migration(particles, marr, t_stop):
     rad = np.sqrt(rji[0]**2 + rji[1]**2)
     theta = np.arctan2(rji[1], rji[0])
 
-    v_kep = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
-    # v_head = v_kep *0.4
-    v_head = 1e6
-    # t_stop = rad*1e-5
+    v_kep  = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
+    # v_head = 1e6
+    v_head = 476555.
 
-    t_stop_factor = t_stop/(2978469./pars.au)#rad*t_stop
+    t_stop = tau / (v_kep / rad)
+    # t_stop = 1.
+    print 'tstop:', t_stop
 
-    v_gas = np.zeros(3)
+    # print 'v_kep:', v_kep
+    # print 'v_head:', v_head
+    # print 't_stop', t_stop
 
-    v_theta = np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
-    v_r     = np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
-
+    v_gas    = np.zeros(3)
     v_gas[0] = -np.sin(theta) * (v_kep - v_head)
     v_gas[1] =  np.cos(theta) * (v_kep - v_head)
 
-    acc[1,:] = - ( vji - v_gas) / t_stop_factor
+    acc[1, :] = - (vji - v_gas) / t_stop
 
     return acc, v_kep
 
 
 
-def forces_total(particles, marr,t_stop):
+def forces_total(particles, marr,tau):
     acc_tot = np.zeros((pars.Np, 3))
 
     acc_grav = forces(particles, marr)
-    acc_mig, v_kep = forces_migration(particles, marr, t_stop)
+    acc_mig, v_kep = forces_migration(particles, marr, tau)
     acc_tot = acc_grav + acc_mig
 
 
