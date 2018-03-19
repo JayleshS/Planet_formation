@@ -173,8 +173,7 @@ def main():
 
 	calc_step = 10
 
-    '''1e-9 is heel raar'''
-	t_stop_factors= [1e-5,1e-6,1e-7,1e-8]
+	t_stop_factors= [1e-5,1e-6,1e-7,1e-8] #######################   1e-9 is heel raar
 	# t_stop_factors=[1e-9]
 	# t_stop_factors = np.geomspace(1e-5, 1e-8, num=10)
 	for tstop in t_stop_factors:
@@ -189,11 +188,11 @@ def main():
 		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
 		# delta_vkep = vkep[0::calc_step]
 		# plt.plot(delta_a/delta_vkep)
-		# plot_pos(pos_leapfrog)
-		# plt.show()
-		plt.plot(a_leapfrog, label=tstop)
-		plt.xscale("Log")
-        plt.yscale("Log")
+		plot_pos(pos_leapfrog)
+		plt.show()
+		# plt.plot(a_leapfrog, label=tstop)
+		# plt.xscale("Log")
+        # plt.yscale("Log")
 		# plt.plot(vkep)
 	plt.legend()
 	plt.show()
