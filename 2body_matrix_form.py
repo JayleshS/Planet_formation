@@ -55,7 +55,7 @@ def midpoint(dt, tfinal):
 	return x_and_v, e_error
 
 
-def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
+def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 	particles, marr = fn.init_2body(init_e)
 	etot0 = fn.e_tot(particles, marr)
 
@@ -69,7 +69,7 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 
 	while time < tfinal:
 		if drag:
-			acc, v_kep = fn.forces_total(particles, marr, t_stop)
+			acc, v_kep = fn.forces_total(particles, marr, tau)
 		else:
 			acc = fn.forces(particles, marr)
 			v_kep=[]
@@ -77,7 +77,7 @@ def leapfrog(dt, tfinal, t_stop, drag=False, init_e=0.0):
 		particles[:,0,:] += particles[:,1,:]*dt
 
 		if drag:
-			acc, v_kep = fn.forces_total(particles, marr, t_stop)
+			acc, v_kep = fn.forces_total(particles, marr, tau)
 		else:
 			acc = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
@@ -142,10 +142,10 @@ def plot_pos(particles):
 	xarr = np.array(particles)
 
 	for planet in range(pars.Np):
-		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1], label=planet)
+		plt.plot(xarr[:, planet, 0, 0]/pars.au, xarr[:, planet, 0, 1]/pars.au, label=planet)
 	plt.legend()
-	plt.xlabel('$x_{pos}$[cm]')
-	plt.ylabel('$y_{pos}$[cm]')
+	plt.xlabel('$x_{pos}$[au]')
+	plt.ylabel('$y_{pos}$[au]')
 	plt.show()
 
 
@@ -166,12 +166,12 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 def main():
 	dt = 0.001*pars.yr
-	tfinal = 0.004*pars.yr
+	tfinal = 0.003*pars.yr
 
 	calc_step = 10
 	omega_k = (2*np.pi)/pars.yr
 
-	tau_vals= [1e-2]#,1e-6,1e-7,1e-8]
+	tau_vals= [1e-1]#,1e-6,1e-7,1e-8]
 	# tau_vals = np.geomspace(3e-3, 3e3, num=10)
 	for tau in tau_vals:
 		print 'calculating', tau
@@ -180,7 +180,7 @@ def main():
 		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
 		# delta_vkep = vkep[0::calc_step]
 		# plt.plot(delta_a/delta_vkep)
-		# plot_pos(pos_leapfrog)
+		plot_pos(pos_leapfrog)
 		# plt.show()
 		plt.plot(np.array(time)/pars.yr, np.array(a_leapfrog)/pars.au, label='{:0.2e}'.format(tau))
 		# plt.xscale("Log")

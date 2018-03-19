@@ -62,18 +62,23 @@ def forces_migration(particles, marr, tau):
     v_kep  = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
     # v_head = 1e6
     v_head = 476555.
+    v_head = 0
 
+    tau = 1.
     t_stop = tau / (v_kep / rad)
     # t_stop = 1.
-    print 'tstop:', t_stop
-
-    # print 'v_kep:', v_kep
+    # print 'tstop:', t_stop
+    # print 'v_kep - vji:', v_kep - np.sqrt(sum(vji**2))
+    # print 'vji:', np.sqrt(sum(vji**2))
+    # print 'v_kep - vhead:', v_kep - v_head
     # print 'v_head:', v_head
     # print 't_stop', t_stop
 
     v_gas    = np.zeros(3)
     v_gas[0] = -np.sin(theta) * (v_kep - v_head)
     v_gas[1] =  np.cos(theta) * (v_kep - v_head)
+    print 'vji:', vji
+    print 'v_gas:', v_gas
 
     acc[1, :] = - (vji - v_gas) / t_stop
 
