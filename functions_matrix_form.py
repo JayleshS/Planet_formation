@@ -62,14 +62,14 @@ def forces_migration(particles, marr, tau):
     v_kep  = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
     v_head = 1
 
-    
-    tau = tau / (v_kep / rad)
+
+    t_stop = tau / (v_kep / rad)
 
     v_gas    = np.zeros(3)
     v_gas[0] = -np.sin(theta) * (v_kep - v_head)
     v_gas[1] =  np.cos(theta) * (v_kep - v_head)
 
-    acc[1,:] = - ( vji - v_gas) / tau
+    acc[1, :] = - (vji - v_gas) / t_stop
 
     return acc, v_kep
 
@@ -115,13 +115,3 @@ def get_orbital_elements(particles, marr):
     a = (sum(ang[1, :]**2)) / (pars.gN*sum(marr)*(1-sum(e**2)))
 
     return e, a
-
-def calc_vr(particles):
-    rji = particles[1, 0, :] - particles[0, 0, :]
-    vji = particles[1, 1, :] - particles[0, 1, :]
-
-    # Convert to cylindrical coordinates
-    rad = np.sqrt(rji[0]**2 + rji[1]**2)
-    theta = np.arctan2(rji[1], rji[0])
-
-    v_r = np.cos(theta) * vji[0] + np.sin(theta)

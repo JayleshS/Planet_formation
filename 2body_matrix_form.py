@@ -85,6 +85,7 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 		particles[:,1,:] += acc* dt/2
 
 		x_and_v.append(particles.tolist())
+
 		ecc, a = fn.get_orbital_elements(particles, marr)
 
 		# print np.append(np.zeros(1), a)
@@ -184,7 +185,7 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 def main():
 	dt     = 0.001
-	tfinal = 0.005
+	tfinal = 5.
 
 	calc_step = 10
 	omega_k = (2*np.pi)
@@ -200,14 +201,14 @@ def main():
 		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
 		# delta_vkep = vkep[0::calc_step]
 		# plt.plot(delta_a/delta_vkep)
-		# plot_pos(pos_leapfrog)
+		plot_pos(pos_leapfrog)
 		# plt.show()
 		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
 		# plt.xscale("Log")
         # plt.yscale("Log")
 
-	# plt.legend()
-	# plt.show()
+	plt.legend()
+	plt.show()
 
 if __name__ == '__main__':
 	main()
