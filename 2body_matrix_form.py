@@ -172,33 +172,34 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 def main():
 	dt     = 0.001
-	tfinal = 0.005
+	tfinal = 50
 
 	calc_step = 10
 	omega_k = (2*np.pi)
 
-	tau_vals= [1e-2]
+	tau_vals= [1e2]
 	# tau_vals = np.geomspace(1e-2, 1e2, num=10)
 	for tau in tau_vals:
 		print 'calculating', tau
-
-		pos_leapfrog,_,a_leapfrog, e_leapfrog,_,time = leapfrog(dt, tfinal, tau, drag=True, init_e=0.2)
-
+		pos_leapfrog, _, a_leapfrog, e_leapfrog, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+		pos_arr = np.array(pos_leapfrog)
+		diff = (pos_arr[:, 1, 0, :] - pos_arr[:, 0, 0, :])**2
+		rji = np.sqrt(np.sum(diff, axis=1))
+		dr = (rji[:-1]-rji[1:])/dt
+		plt.plot(time[:-1], dr/v_kep[:-1])
 
 		# a_array = np.array(a_leapfrog)
 		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
 		# delta_vkep = vkep[0::calc_step]
-		# plt.plot(delta_a/delta_vkep)
+		# plt.plot(time, rji)
 		# plot_pos(pos_leapfrog)
 		# plt.show()
-		plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
+		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
 		# plt.xscale("Log")
         # plt.yscale("Log")
-        pos_arr = np.array(pos_leapfrog)
-        diff = pos_arr[:, 1, 0, :] - pos_arr[:, 0, 0, :]
-        # print np.sum(diff, axis=1)
+        
 
-	plt.legend()
+	# plt.legend()
 	plt.show()
 
 if __name__ == '__main__':
