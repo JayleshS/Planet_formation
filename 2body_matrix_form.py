@@ -172,13 +172,13 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 def main():
 	dt     = 0.001
-	tfinal = 150
+	tfinal = 5
 
 	calc_step = 10
 	omega_k = (2*np.pi)
 
-	# tau_vals= [1e-2]
-	tau_vals = np.geomspace(1e1, 1e2, num=5)
+	tau_vals= [1e2]
+	# tau_vals = np.geomspace(1e-3, 1e3, num=11)
 	for tau in tau_vals:
 		print 'calculating', tau
 		pos_leapfrog, _, a_leapfrog, e_leapfrog, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
@@ -187,18 +187,15 @@ def main():
 		rji = np.sqrt(np.sum(diff, axis=1))
 		vr = (rji[:-1]-rji[1:])/dt
 		plt.plot(time[:-1], vr/v_kep[:-1], label='{:0.2e}'.format(tau))
+		#
+		# np.save("vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  dr/v_kep[:-1])
 
-		# a_array = np.array(a_leapfrog)
-		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
-		# delta_vkep = vkep[0::calc_step]
-		# plt.plot(time, rji)
-		# plot_pos(pos_leapfrog)
-		# plt.show()
-		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
-		# plt.xscale("Log")
-        # plt.yscale("Log")
-        
+		# ding = np.load("vratio_dt=0.001_tfinal=100_tau=1.0.npy")
 
+
+		# plt.plot(np.arange(99999), ding)
+		# print len (v_kep)
+		# print time
 	plt.legend()
 	plt.show()
 
