@@ -64,8 +64,10 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 	x_and_v =[]
 	vkep_list = []
 	time_list = []
+	save_matrix = np.array([])
 
 	time = 0
+	i=0
 
 	while time < tfinal:
 		if drag:
@@ -83,8 +85,18 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 		particles[:,1,:] += acc* dt/2
 
 		x_and_v.append(particles.tolist())
-
+		# print 'next'
 		ecc, a = fn.get_orbital_elements(particles, marr)
+
+		# print np.append(np.zeros(1), a)
+		# dingenenzo =  np.insert(save_matrix, i,a)
+		#
+		# save_matrix =  np.insert(save_matrix, i,a)
+		#
+		#
+		# print save_matrix
+		# print dingenenzo
+
 
 		eccentricity.append(np.sqrt(sum(ecc)**2))
 		semi_major_axis.append(a)
@@ -92,6 +104,7 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 		time_list.append(time)
 
 		time += dt
+		i+=1
 
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
@@ -142,10 +155,16 @@ def plot_pos(particles):
 	xarr = np.array(particles)
 
 	for planet in range(pars.Np):
-		plt.plot(xarr[:, planet, 0, 0]/pars.au, xarr[:, planet, 0, 1]/pars.au, label=planet)
+		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1], label=planet)
+	plt.scatter(0,0, c="y")
+	plt.scatter(1.,0, c="b")
+
 	plt.legend()
-	plt.xlabel('$x_{pos}$[au]')
-	plt.ylabel('$y_{pos}$[au]')
+	plt.xlabel('$x_{pos}$[AU]')
+	plt.ylabel('$y_{pos}$[AU]')
+	# plt.xlim(-1.5, 1.5)
+	# plt.ylim(-1.5, 1.5)
+
 	plt.show()
 
 
@@ -165,30 +184,32 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 
 def main():
-	dt = 0.001*pars.yr
-	tfinal = 0.003*pars.yr
+	dt     = 0.001
+	tfinal = 1
 
 	calc_step = 10
-	omega_k = (2*np.pi)/pars.yr
+	omega_k = (2*np.pi)
 
-	tau_vals= [1e-1]#,1e-6,1e-7,1e-8]
-	# tau_vals = np.geomspace(3e-3, 3e3, num=10)
+	tau_vals= [1e-2]
+	# tau_vals = np.geomspace(1e-2, 1e2, num=10)
 	for tau in tau_vals:
 		print 'calculating', tau
-		pos_leapfrog,_,a_leapfrog,_,_,time = leapfrog(dt, tfinal, tau, drag=True)
+
+		pos_leapfrog,_,a_leapfrog, e_leapfrog,_,time = leapfrog(dt, tfinal, tau, drag=True, init_e=0.2)
+
 		# a_array = np.array(a_leapfrog)
 		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
 		# delta_vkep = vkep[0::calc_step]
 		# plt.plot(delta_a/delta_vkep)
 		plot_pos(pos_leapfrog)
 		# plt.show()
-		plt.plot(np.array(time)/pars.yr, np.array(a_leapfrog)/pars.au, label='{:0.2e}'.format(tau))
+		plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
 		# plt.xscale("Log")
         # plt.yscale("Log")
-		# plt.plot(vkep)
-		# plt.plot(a_leapfrog, label=tau)
-		# plt.xscale("Log")
-        # plt.yscale("Log")
+        # pos_arr = np.array(pos_leapfrog)
+        # diff = pos_arr[:, 1, 0, :] - pos_arr[:, 0, 0, :]
+        # print np.sum(diff, axis=1)
+
 	plt.legend()
 	plt.show()
 
