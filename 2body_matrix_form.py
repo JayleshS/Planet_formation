@@ -64,10 +64,8 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 	x_and_v =[]
 	vkep_list = []
 	time_list = []
-	save_matrix = np.array([])
 
 	time = 0
-	i=0
 
 	while time < tfinal:
 		if drag:
@@ -88,23 +86,12 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 		# print 'next'
 		ecc, a = fn.get_orbital_elements(particles, marr)
 
-		# print np.append(np.zeros(1), a)
-		# dingenenzo =  np.insert(save_matrix, i,a)
-		#
-		# save_matrix =  np.insert(save_matrix, i,a)
-		#
-		#
-		# print save_matrix
-		# print dingenenzo
-
-
 		eccentricity.append(np.sqrt(sum(ecc)**2))
 		semi_major_axis.append(a)
 		vkep_list.append(v_kep)
 		time_list.append(time)
 
 		time += dt
-		i+=1
 
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
@@ -185,7 +172,11 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 def main():
 	dt     = 0.001
+<<<<<<< HEAD
 	tfinal = 1
+=======
+	tfinal = 0.005
+>>>>>>> 942ed76230b4d454d22c6e90a5c95d0ba9d398e4
 
 	calc_step = 10
 	omega_k = (2*np.pi)
@@ -197,11 +188,12 @@ def main():
 
 		pos_leapfrog,_,a_leapfrog, e_leapfrog,_,time = leapfrog(dt, tfinal, tau, drag=True, init_e=0.2)
 
+
 		# a_array = np.array(a_leapfrog)
 		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
 		# delta_vkep = vkep[0::calc_step]
 		# plt.plot(delta_a/delta_vkep)
-		plot_pos(pos_leapfrog)
+		# plot_pos(pos_leapfrog)
 		# plt.show()
 		plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
 		# plt.xscale("Log")
