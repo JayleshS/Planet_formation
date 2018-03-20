@@ -103,6 +103,7 @@ def hermite(dt, tfinal):
 	etot0 = fn.e_tot(particles, marr)
 	time = 0
 	iterations = 2
+	x_and_v =[]
 	ecc = []
 	a_list = []
 
@@ -167,9 +168,9 @@ def plot_error(timestep, error1, error2, error3, error4):
 	plt.plot(timestep, np.abs(error3), label = 'leapfrog')
 	plt.plot(timestep, np.abs(error4), label = 'hermite')
 
-	plt.title('timestep = ' + str(timestep))
+	plt.title('Error convergence')
 	plt.legend()
-	plt.xlabel("stepsize [yr]")
+	plt.xlabel("Stepsize [yr]")
 	plt.ylabel("Error in energy")
 	plt.yscale("log")
 	plt.xscale("log")
@@ -193,30 +194,31 @@ def vr_file(dt, tfinal, tau, save=True):
 
 def main():
 	dt     = 0.001
-	tfinal = 13
+	tfinal = 100
 
 	calc_step = 10
 	omega_k = (2*np.pi)
 
 	# tau_vals= [5e1]
-	tau_vals = np.geomspace(1, 1e1, num=2)
+	tau_vals = np.geomspace(5, 5e2, num=10)
 
 	for tau in tau_vals:
 		print 'calculating', tau
-		pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
-
-		saved_time, v_ratio = vr_file(dt, tfinal, tau, save=False)
-		# plt.plot(saved_time, v_ratio, label='{:0.2e}'.format(tau))
-
+		# pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+		#
+		# saved_time, v_ratio = vr_file(dt, tfinal, tau, save=False)
 		# v_ratio = np.load("trail2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
+
+		# plt.plot(v_ratio[0], v_ratio[1], label='{:0.2e}'.format(tau))
 
 		# plot_pos(pos_leapfrog)
 		# plt.show()
 		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau
 
-
-		# plt.scatter(tau,v_ratio[6000], c='b')
-		'''gemiddelde waarden voor tau= 3e2, 5e2'''
+		#
+		# if :
+		# plt.scatter(tau,v_ratio[1][90000], c='b')
+		# '''gemiddelde waarden voor tau= 3e2, 5e2'''
 		# else:
 		# 	plt.scatter(tau,v_ratio[1][90000], c='r')
 		# 	plt.scatter(3.00e2, 2.66549e-5, c='g')
@@ -226,7 +228,7 @@ def main():
 		# plt.xscale("Log")
         # plt.yscale("Log")
 
-	# plt.xlim(0,1e4)
+	# plt.xlim(1e-5,1e-2)
 	# plt.ylim(1e-5,1e-2)
 	plt.legend()
 	plt.show()
