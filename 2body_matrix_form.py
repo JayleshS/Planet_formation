@@ -135,24 +135,30 @@ def hermite(dt, tfinal):
 	return x_and_v, e_error, ecc, a_list
 
 
-def plot_pos(particles):
+def plot_pos(particles, ax_range=1.2, tfinal=None):
 	'''
 	Plots list (t, Np, 2, 3)
 	'''
 	xarr = np.array(particles)
 
-	for planet in range(pars.Np):
-		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1], label=planet)
-	plt.scatter(0,0, c="y")
-	plt.scatter(1.,0, c="b")
+	plt.plot(xarr[:, 0, 0, 0], xarr[:, 0, 0, 1], c='y')
+	plt.plot(xarr[:, 1, 0, 0], xarr[:, 1, 0, 1], label='Test particle', c='r')
+
+	plt.scatter(1.,0, c="b", label='Initial postition')
+	plt.scatter(0,0, c="y", label='Sun')
 
 	plt.legend()
-	plt.xlabel('$x_{pos}$[AU]')
-	plt.ylabel('$y_{pos}$[AU]')
-	# plt.xlim(-1.5, 1.5)
-	# plt.ylim(-1.5, 1.5)
-
+	plt.xlabel('$x_{pos}$(au)')
+	plt.ylabel('$y_{pos}$(au)')
+	plt.xlim(-ax_range, ax_range)
+	plt.ylim(-ax_range, ax_range)
+	plt.title('Total integration time: %s years' %tfinal)
+	plt.axis('equal')
 	plt.show()
+
+
+def plot_element(time, element, xlabel='Time', ylabel=None):
+	pass
 
 
 def plot_error(timestep, error1, error2, error3, error4):
@@ -172,32 +178,40 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 def main():
 	dt     = 0.001
-	tfinal = 5
+	tfinal = 4
 
 	calc_step = 10
 	omega_k = (2*np.pi)
 
-	tau_vals= [1e2]
-	# tau_vals = np.geomspace(1e-3, 1e3, num=11)
+	tau_vals= [1]
+	# tau_vals = np.geomspace(1e-2, 0.4, num=9)
 	for tau in tau_vals:
 		print 'calculating', tau
 		pos_leapfrog, _, a_leapfrog, e_leapfrog, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 		pos_arr = np.array(pos_leapfrog)
+		a_leapfrog = np.array(a_leapfrog)
 		diff = (pos_arr[:, 1, 0, :] - pos_arr[:, 0, 0, :])**2
 		rji = np.sqrt(np.sum(diff, axis=1))
 		vr = (rji[:-1]-rji[1:])/dt
-		plt.plot(time[:-1], vr/v_kep[:-1], label='{:0.2e}'.format(tau))
+
+		# vr_a = (a_leapfrog[:-1] - a_leapfrog[1:])/dt
+		# plt.plot(time[:-1], vr_a/v_kep[:-1])
+		# plt.plot(time[:-1], vr/v_kep[:-1], label='{:0.2e}'.format(tau))
 		#
 		# np.save("vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  dr/v_kep[:-1])
+		# print len(time[:-1])
+		# print len(vr/v_kep[:-1])
 
 		# ding = np.load("vratio_dt=0.001_tfinal=100_tau=1.0.npy")
+		plot_pos(pos_leapfrog, tfinal=tfinal)
+		# plt.plot(time, a_leapfrog, label='{:0.4e}'.format(tau))
 
 
 		# plt.plot(np.arange(99999), ding)
 		# print len (v_kep)
 		# print time
-	plt.legend()
-	plt.show()
+	# plt.legend()
+	# plt.show()
 
 if __name__ == '__main__':
 	main()
