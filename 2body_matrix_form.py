@@ -182,16 +182,19 @@ def main():
 	for tau in tau_vals:
 		print 'calculating', tau
 
-		pos_leapfrog,_,a_leapfrog, e_leapfrog,_,time = leapfrog(dt, tfinal, tau, drag=True, init_e=0.2)
+		pos_leapfrog,_,a_leapfrog, e_leapfrog,v_kep,time = leapfrog(dt, tfinal, tau, drag=True)
 
+
+		# print len (v_kep)
+		# print time
 
 		# a_array = np.array(a_leapfrog)
 		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
 		# delta_vkep = vkep[0::calc_step]
-		# plt.plot(delta_a/delta_vkep)
+		plt.plot(time,v_kep)
 		# plot_pos(pos_leapfrog)
 		# plt.show()
-		plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
+		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
 		# plt.xscale("Log")
         # plt.yscale("Log")
         # pos_arr = np.array(pos_leapfrog)
