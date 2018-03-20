@@ -172,11 +172,7 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 def main():
 	dt     = 0.001
-<<<<<<< HEAD
-	tfinal = 1
-=======
 	tfinal = 0.005
->>>>>>> 942ed76230b4d454d22c6e90a5c95d0ba9d398e4
 
 	calc_step = 10
 	omega_k = (2*np.pi)
@@ -198,8 +194,8 @@ def main():
 		plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
 		# plt.xscale("Log")
         # plt.yscale("Log")
-        # pos_arr = np.array(pos_leapfrog)
-        # diff = pos_arr[:, 1, 0, :] - pos_arr[:, 0, 0, :]
+        pos_arr = np.array(pos_leapfrog)
+        diff = pos_arr[:, 1, 0, :] - pos_arr[:, 0, 0, :]
         # print np.sum(diff, axis=1)
 
 	plt.legend()
