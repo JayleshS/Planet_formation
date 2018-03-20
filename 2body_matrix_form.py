@@ -135,24 +135,30 @@ def hermite(dt, tfinal):
 	return x_and_v, e_error, ecc, a_list
 
 
-def plot_pos(particles):
+def plot_pos(particles, ax_range=1.2, tfinal=None):
 	'''
 	Plots list (t, Np, 2, 3)
 	'''
 	xarr = np.array(particles)
 
-	for planet in range(pars.Np):
-		plt.plot(xarr[:, planet, 0, 0], xarr[:, planet, 0, 1], label=planet)
-	plt.scatter(0,0, c="y")
-	plt.scatter(1.,0, c="b")
+	plt.plot(xarr[:, 0, 0, 0], xarr[:, 0, 0, 1], c='y')
+	plt.plot(xarr[:, 1, 0, 0], xarr[:, 1, 0, 1], label='Test particle', c='r')
+
+	plt.scatter(1.,0, c="b", label='Initial postition')
+	plt.scatter(0,0, c="y", label='Sun')
 
 	plt.legend()
-	plt.xlabel('$x_{pos}$[AU]')
-	plt.ylabel('$y_{pos}$[AU]')
-	# plt.xlim(-1.5, 1.5)
-	# plt.ylim(-1.5, 1.5)
-
+	plt.xlabel('$x_{pos}$(au)')
+	plt.ylabel('$y_{pos}$(au)')
+	plt.xlim(-ax_range, ax_range)
+	plt.ylim(-ax_range, ax_range)
+	plt.title('Total integration time: %s years' %tfinal)
+	plt.axis('equal')
 	plt.show()
+
+
+def plot_element(time, element, xlabel='Time', ylabel=None):
+	pass
 
 
 def plot_error(timestep, error1, error2, error3, error4):
