@@ -142,7 +142,7 @@ def plot_pos(particles, ax_range=1.2, tfinal=None):
 	xarr = np.array(particles)
 
 	plt.plot(xarr[:, 0, 0, 0], xarr[:, 0, 0, 1], c='y')
-	plt.plot(xarr[:, 1, 0, 0], xarr[:, 1, 0, 1], label='Test particle', c='r')
+	plt.plot(xarr[:, 1, 0, 0], xarr[:, 1, 0, 1], label='Test particle', c='indianred')
 
 	plt.scatter(1.,0, c="b", label='Initial postition')
 	plt.scatter(0,0, c="y", label='Sun')
@@ -154,11 +154,20 @@ def plot_pos(particles, ax_range=1.2, tfinal=None):
 	plt.ylim(-ax_range, ax_range)
 	plt.title('Total integration time: %s years' %tfinal)
 	plt.axis('equal')
-	plt.show()
+	plt.savefig('5yrs_pos.png', transparant=True)
+	plt.close()
 
 
-def plot_element(time, element, xlabel='Time', ylabel=None):
-	pass
+def plot_a(time, a, save=False):
+	plt.plot(time, a, label='Test particle', c='indianred')
+	plt.xlabel('Time (years)')
+	plt.ylabel('Semi major axis (au)')
+	plt.legend()
+	if save:
+		plt.savefig('5yrs_a.png', transparant=True)
+		plt.close()
+	else:
+		plt.show()
 
 
 def plot_error(timestep, error1, error2, error3, error4):
@@ -193,24 +202,25 @@ def vr_file(dt, tfinal, tau, save=True):
 
 def main():
 	dt     = 0.001
-	tfinal = 13
+	tfinal = 5
 
 	calc_step = 10
 	omega_k = (2*np.pi)
 
-	# tau_vals= [5e1]
-	tau_vals = np.geomspace(1, 1e1, num=2)
+	tau_vals= [0.1, 1]
+	# tau_vals = np.geomspace(1, 1e1, num=2)
 
 	for tau in tau_vals:
 		print 'calculating', tau
-		pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+		pos_leapfrog, _, a_leapfrog, _, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 
-		saved_time, v_ratio = vr_file(dt, tfinal, tau, save=False)
+		# saved_time, v_ratio = vr_file(dt, tfinal, tau, save=False)
 		# plt.plot(saved_time, v_ratio, label='{:0.2e}'.format(tau))
 
 		# v_ratio = np.load("trail2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
 
-		# plot_pos(pos_leapfrog)
+		# plot_pos(pos_leapfrog, tfinal=tfinal)
+		plot_a(time, a_leapfrog)
 		# plt.show()
 		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau
 
@@ -228,8 +238,8 @@ def main():
 
 	# plt.xlim(0,1e4)
 	# plt.ylim(1e-5,1e-2)
-	plt.legend()
-	plt.show()
+	# plt.legend()
+	# plt.show()
 
 if __name__ == '__main__':
 	main()
