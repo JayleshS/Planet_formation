@@ -167,51 +167,63 @@ def plot_error(timestep, error1, error2, error3, error4):
 	plt.ylabel("Error in energy")
 	plt.yscale("log")
 	plt.xscale("log")
+	plt.axis('equal')
 	plt.show()
 
 
-def main():
-	dt     = 0.001
-	tfinal = 10
-
-	calc_step = 10
-	omega_k = (2*np.pi)
-
-	tau_vals= [5e1]
-	# tau_vals = np.geomspace(5e-2, 5e2, num=11)
-	for tau in tau_vals:
-		print 'calculating', tau
+def calculate_vr(dt, tfinal, tau, save=True):
 		pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 
 		pos_arr = np.array(pos_leapfrog)
 		diff = (pos_arr[:, 1, 0, :] - pos_arr[:, 0, 0, :])**2
 		rji = np.sqrt(np.sum(diff, axis=1))
 		dr = (rji[:-1]-rji[1:])/dt
-		# plt.plot(time[:-1], dr/v_kep[:-1], label='{:0.2e}'.format(tau))
 
-		np.save("vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
+		if save:
+			np.save("vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
 
-		# v_ratio = np.load("vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
+		return time[:-1], dr/v_kep[:-1]
 
-		# print v_ratio
 
-		# plt.plot(v_ratio[0], v_ratio[1], label='{:0.2e}'.format(tau) )
-		# print len (v_kep)
-		# print time
+def main():
+	dt     = 0.001
+	tfinal = 13
 
-		# a_array = np.array(a_leapfrog)
-		# delta_a = (a_array[1::calc_step] - a_array[0:-1:calc_step])/(calc_step*dt)
-		# delta_vkep = vkep[0::calc_step]
-		# plt.plot(time, rji)
+	calc_step = 10
+	omega_k = (2*np.pi)
+
+	# tau_vals= [5e1]
+	tau_vals = np.geomspace(1, 1e1, num=2)
+
+	for tau in tau_vals:
+		print 'calculating', tau
+		pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+
+		saved_time, v_ratio = calculate_vr(dt, tfinal, tau, save=False)
+		# plt.plot(saved_time, v_ratio, label='{:0.2e}'.format(tau))
+
+		# v_ratio = np.load("trail2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
+
 		# plot_pos(pos_leapfrog)
 		# plt.show()
-		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
+		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau
+
+
+		# plt.scatter(tau,v_ratio[6000], c='b')
+		'''gemiddelde waarden voor tau= 3e2, 5e2'''
+		# else:
+		# 	plt.scatter(tau,v_ratio[1][90000], c='r')
+		# 	plt.scatter(3.00e2, 2.66549e-5, c='g')
+		# 	plt.scatter(5.00e2,   1.597e-5, c= 'g')
+
+
 		# plt.xscale("Log")
         # plt.yscale("Log")
 
-
-	# plt.legend()
-	# plt.show()
+	# plt.xlim(0,1e4)
+	# plt.ylim(1e-5,1e-2)
+	plt.legend()
+	plt.show()
 
 if __name__ == '__main__':
 	main()
