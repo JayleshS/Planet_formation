@@ -68,6 +68,8 @@ def forces_migration(particles, marr, tau):
     v_gas    = np.zeros(3)
     v_gas[0] = -np.sin(theta) * (v_kep - v_head)
     v_gas[1] =  np.cos(theta) * (v_kep - v_head)
+    # print 'vji:', vji[0]
+    # print 'v_gas:', v_gas[0]
 
     acc[1, :] = - (vji - v_gas) / t_stop
 
@@ -106,6 +108,7 @@ def get_orbital_elements(particles, marr):
     vji = particles[1, 1, :] - particles[0, 1, :]
     r1 = np.sqrt(sum(rji**2))
 
+    ang[0, :] += np.cross(rji, vji)
     ang[1, :] += np.cross(rji, vji)
     lz = ang[1, 2]
     inc = np.arccos(lz / np.sqrt(sum(ang[1, :]**2)))

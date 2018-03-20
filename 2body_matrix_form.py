@@ -83,7 +83,7 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 		particles[:,1,:] += acc* dt/2
 
 		x_and_v.append(particles.tolist())
-
+		# print 'next'
 		ecc, a = fn.get_orbital_elements(particles, marr)
 
 		eccentricity.append(np.sqrt(sum(ecc)**2))
@@ -177,12 +177,12 @@ def main():
 	calc_step = 10
 	omega_k = (2*np.pi)
 
-	tau_vals= [1]
-	# tau_vals = np.geomspace(3e-3, 3e3, num=10)
+	tau_vals= [1e-2]
+	# tau_vals = np.geomspace(1e-2, 1e2, num=10)
 	for tau in tau_vals:
 		print 'calculating', tau
 
-		pos_leapfrog,_,a_leapfrog,_,_,time = leapfrog(dt, tfinal, tau, drag=True, init_e=0.1)
+		pos_leapfrog,_,a_leapfrog, e_leapfrog,_,time = leapfrog(dt, tfinal, tau, drag=True, init_e=0.2)
 
 
 		# a_array = np.array(a_leapfrog)
@@ -192,7 +192,12 @@ def main():
 		# plot_pos(pos_leapfrog)
 		# plt.show()
 		plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
-		
+		# plt.xscale("Log")
+        # plt.yscale("Log")
+        # pos_arr = np.array(pos_leapfrog)
+        # diff = pos_arr[:, 1, 0, :] - pos_arr[:, 0, 0, :]
+        # print np.sum(diff, axis=1)
+
 	plt.legend()
 	plt.show()
 
