@@ -171,7 +171,7 @@ def plot_error(timestep, error1, error2, error3, error4):
 	plt.show()
 
 
-def calculate_vr(dt, tfinal, tau, save=True):
+def vr_file(dt, tfinal, tau, save=True):
 		pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 
 		pos_arr = np.array(pos_leapfrog)
@@ -199,7 +199,7 @@ def main():
 		print 'calculating', tau
 		pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 
-		saved_time, v_ratio = calculate_vr(dt, tfinal, tau, save=False)
+		saved_time, v_ratio = vr_file(dt, tfinal, tau, save=False)
 		# plt.plot(saved_time, v_ratio, label='{:0.2e}'.format(tau))
 
 		# v_ratio = np.load("trail2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
