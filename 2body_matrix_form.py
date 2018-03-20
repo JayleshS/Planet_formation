@@ -178,16 +178,17 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 def main():
 	dt     = 0.001
-	tfinal = 4
+	tfinal = 10
 
 	calc_step = 10
 	omega_k = (2*np.pi)
 
-	tau_vals= [1]
-	# tau_vals = np.geomspace(1e-2, 0.4, num=9)
+	tau_vals= [5e1]
+	# tau_vals = np.geomspace(5e-2, 5e2, num=11)
 	for tau in tau_vals:
 		print 'calculating', tau
-		pos_leapfrog, _, a_leapfrog, e_leapfrog, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+		pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+
 		pos_arr = np.array(pos_leapfrog)
 		a_leapfrog = np.array(a_leapfrog)
 		diff = (pos_arr[:, 1, 0, :] - pos_arr[:, 0, 0, :])**2
@@ -206,10 +207,12 @@ def main():
 		plot_pos(pos_leapfrog, tfinal=tfinal)
 		# plt.plot(time, a_leapfrog, label='{:0.4e}'.format(tau))
 
+		# print v_ratio
 
-		# plt.plot(np.arange(99999), ding)
+		# plt.plot(v_ratio[0], v_ratio[1], label='{:0.2e}'.format(tau) )
 		# print len (v_kep)
 		# print time
+
 	# plt.legend()
 	# plt.show()
 
