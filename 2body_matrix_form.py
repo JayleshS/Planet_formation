@@ -172,7 +172,7 @@ def plot_error(timestep, error1, error2, error3, error4):
 
 def main():
 	dt     = 0.001
-	tfinal = 0.005
+	tfinal = 5
 
 	calc_step = 10
 	omega_k = (2*np.pi)
@@ -182,7 +182,7 @@ def main():
 	for tau in tau_vals:
 		print 'calculating', tau
 
-		pos_leapfrog,_,a_leapfrog,_,_,time = leapfrog(dt, tfinal, tau, drag=True)
+		pos_leapfrog,_,a_leapfrog,_,_,time = leapfrog(dt, tfinal, tau, drag=True, init_e=0.1)
 
 
 		# a_array = np.array(a_leapfrog)
@@ -191,12 +191,10 @@ def main():
 		# plt.plot(delta_a/delta_vkep)
 		# plot_pos(pos_leapfrog)
 		# plt.show()
-		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
-		# plt.xscale("Log")
-        # plt.yscale("Log")
-	#
-	# plt.legend()
-	# plt.show()
+		plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
+		
+	plt.legend()
+	plt.show()
 
 if __name__ == '__main__':
 	main()

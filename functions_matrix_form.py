@@ -60,7 +60,7 @@ def forces_migration(particles, marr, tau):
     theta = np.arctan2(rji[1], rji[0])
 
     v_kep  = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
-    v_head = 1
+    v_head = 0.004 * v_kep
 
 
     t_stop = tau / (v_kep / rad)
