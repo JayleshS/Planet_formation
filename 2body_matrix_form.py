@@ -212,6 +212,11 @@ def plot_vratio(tau, tau_vals, v_ratio,label=None):
 		print "alleen 99000",tau
 		plt.scatter(tau,v_ratio[1][99000], c='indianred')
 
+	tauvals = np.geomspace(1e-3, 1e3, num=100)
+	vrvk = taustop(tauvals)
+	plt.plot(tauvals, vrvk)
+
+
 	# '''gemiddelde waarden voor tau= 3e2, 5e2'''
 	# plt.scatter(3.00e2, 2.66549e-5, c='g')
 	# plt.scatter(5.00e2,   1.597e-5, c='g')
@@ -221,10 +226,17 @@ def plot_vratio(tau, tau_vals, v_ratio,label=None):
 	plt.yscale("Log")
 	plt.xlabel("$\\tau_{fric}$")
 	plt.ylabel("$v_{r}/v_{K}$")
-	plt.title("Radial drift for n=1")
+	plt.title("Radial drift for n=2")
 	# plt.ylim(1e-5,1e-2)
 	plt.xlim(1e-3,3e3)
 	plt.legend()
+
+
+def taustop(tau):
+    eta = 0.005
+    vrvk = -eta/(tau+(tau**(-1)))
+    return np.abs(vrvk)
+
 
 
 
@@ -237,14 +249,14 @@ def vr_file(dt, tfinal, tau, save=True):
 		dr = (rji[:-1]-rji[1:])/dt
 
 		if save:
-			np.save("n=1_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
+			np.save("n=2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
 
 		return time[:-1], dr/v_kep[:-1]
 
 
 def main():
 	dt     = 0.001
-	tfinal = 100
+	tfinal = 50
 
 	calc_step = 10
 	omega_k = (2*np.pi)
@@ -255,11 +267,12 @@ def main():
 	tau_lijstje= list(tau_vals)
 
 
+	tau_lijstje = [1e-2,1e-1,1,1e1,1e2]
 
 	for tau in tau_lijstje:
 		print 'calculating', tau
-		# pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
-
+		pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+		#
 		# saved_time, v_ratio = vr_file(dt, tfinal, tau, save=True)
 
 		# v_ratio = np.load("n=1_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
@@ -273,12 +286,15 @@ def main():
 
 		# plot_pos(pos_leapfrog)
 		# plt.show()
-		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau)
+		plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
 	#
-	# plt.savefig('radialdrif_n=1.png', transparant=True)
-	# plt.close()
-	plt.legend()
-	plt.show()
+	# #
+	plt.xlabel("time [yr]")
+	plt.ylabel("semi major axis $a$ [AU]")
+	# plt.legend()
+	# plt.show()
+	plt.savefig('semimajoraxis_extra_tau.png', transparant=True)
+	plt.close()
 
 if __name__ == '__main__':
 	main()
