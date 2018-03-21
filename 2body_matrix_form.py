@@ -155,8 +155,8 @@ def plot_pos(particles, ax_range=1.2, tfinal=None):
 	plt.ylim(-ax_range, ax_range)
 	plt.title('Total integration time: %s years' %tfinal)
 	plt.axis('equal')
-	plt.savefig('5yrs_pos.png', transparant=True)
-	plt.close()
+	# plt.savefig('5yrs_pos.png', transparant=True)
+	# plt.close()
 
 
 def plot_a(time, a, save=False):
@@ -204,7 +204,7 @@ def plot_vratio(tau, tau_vals, v_ratio,label=None):
 
 	if tau <= 3:
 		print "alleen 7000",tau
-		plt.scatter(tau,v_ratio[1][7000], c='indianred', label=label)
+		plt.scatter(tau,v_ratio[1][7000], c='indianred')
 
 	elif tau >5. and tau<5.5:
 		plt.scatter(tau,v_ratio[1][40000], c='indianred', label=label)
@@ -233,6 +233,10 @@ def plot_vratio(tau, tau_vals, v_ratio,label=None):
 
 
 def taustop(tau):
+	#eta=0.0025, n=1
+	#eta = 0.0050, n=2
+	#eta=0.0025, n=3
+
     eta = 0.005
     vrvk = -eta/(tau+(tau**(-1)))
     return np.abs(vrvk)
@@ -256,45 +260,49 @@ def vr_file(dt, tfinal, tau, save=True):
 
 def main():
 	dt     = 0.001
-	tfinal = 50
+	tfinal = 10
 
 	calc_step = 10
 	omega_k = (2*np.pi)
 
 	# tau_vals= [5e1]
-	tau_vals = np.geomspace(2e-3, 1e3, num=21)
-	tau_vals[0] = 3.5e-3
-	tau_lijstje= list(tau_vals)
+	tau_vals = np.geomspace(2e-3, 1e3, num=15)
+	# tau_vals[0] = 3.5e-3
+ 	tau_lijstje= list(tau_vals)
 
 
-	tau_lijstje = [1e-2,1e-1,1,1e1,1e2]
+
+	# tau_lijstje = [1]
 
 	for tau in tau_lijstje:
 		print 'calculating', tau
-		pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+		# pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 		#
 		# saved_time, v_ratio = vr_file(dt, tfinal, tau, save=True)
 
-		# v_ratio = np.load("n=1_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
+		# v_ratio = np.load("n=2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
 
 
 		# plt.plot(v_ratio[0], v_ratio[1], label='{:0.2e}'.format(tau))
 
 		# plt.plot(saved_time, v_ratio, label='{:0.2e}'.format(tau))
+
+
 		# plot_vratio(tau, tau_vals, v_ratio)
 
 
 		# plot_pos(pos_leapfrog)
 		# plt.show()
-		plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
+		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
 	#
 	# #
-	plt.xlabel("time [yr]")
-	plt.ylabel("semi major axis $a$ [AU]")
+	# print 'hi'
+	# plt.xlabel("time [yr]")
+	# plt.ylabel("semi major axis $a$ [AU]")
 	# plt.legend()
 	# plt.show()
-	plt.savefig('semimajoraxis_extra_tau.png', transparant=True)
-	plt.close()
+	# plt.savefig('semimajoraxis_extra_tau.png', transparant=True)
+	# plt.close()
 
 if __name__ == '__main__':
 	main()
