@@ -200,23 +200,32 @@ def plot_error(timestep, tfinal):
 	plt.show()
 
 
-def plot_vratio(tau, tau_vals, v_ratio):
-	if tau in tau_vals[:-3]:
-		print "alleen 3000",tau
-		plt.scatter(tau,v_ratio[1][30000], c='b')
+def plot_vratio(tau, tau_vals, v_ratio,label=None):
+
+	if tau <= 3:
+		print "alleen 7000",tau
+		plt.scatter(tau,v_ratio[1][7000], c='indianred', label=label)
+
+	elif tau >5. and tau<5.5:
+		plt.scatter(tau,v_ratio[1][40000], c='indianred', label=label)
 	else:
-		'''gemiddelde waarden voor tau= 3e2, 5e2'''
-		print "alleen 90000",tau
+		print "alleen 99000",tau
+		plt.scatter(tau,v_ratio[1][99000], c='indianred')
 
-		plt.scatter(tau,v_ratio[1][90000], c='r')
-		plt.scatter(3.00e2, 2.66549e-5, c='g')
-		plt.scatter(5.00e2,   1.597e-5, c= 'g')
+	# '''gemiddelde waarden voor tau= 3e2, 5e2'''
+	# plt.scatter(3.00e2, 2.66549e-5, c='g')
+	# plt.scatter(5.00e2,   1.597e-5, c='g')
 
+	plt.axvline(x=1, linestyle="dotted", c="indianred")
 	plt.xscale("Log")
 	plt.yscale("Log")
-	# plt.xlim(1e-5,1e-2)
+	plt.xlabel("$\\tau_{fric}$")
+	plt.ylabel("$v_{r}/v_{K}$")
+	plt.title("Radial drift for n=1")
 	# plt.ylim(1e-5,1e-2)
+	plt.xlim(1e-3,3e3)
 	plt.legend()
+
 
 
 def vr_file(dt, tfinal, tau, save=True):
@@ -228,7 +237,7 @@ def vr_file(dt, tfinal, tau, save=True):
 		dr = (rji[:-1]-rji[1:])/dt
 
 		if save:
-			np.save("vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
+			np.save("n=1_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
 
 		return time[:-1], dr/v_kep[:-1]
 
@@ -241,24 +250,33 @@ def main():
 	omega_k = (2*np.pi)
 
 	# tau_vals= [5e1]
-	tau_vals = np.geomspace(5, 5e2, num=10)
+	tau_vals = np.geomspace(2e-3, 1e3, num=21)
+	tau_vals[0] = 3.5e-3
+	tau_lijstje= list(tau_vals)
 
 
-	for tau in tau_vals:
+
+	for tau in tau_lijstje:
 		print 'calculating', tau
 		# pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
-		#
-		# saved_time, v_ratio = vr_file(dt, tfinal, tau, save=False)
-		v_ratio = np.load("trail2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
+
+		# saved_time, v_ratio = vr_file(dt, tfinal, tau, save=True)
+
+		# v_ratio = np.load("n=1_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
+
 
 		# plt.plot(v_ratio[0], v_ratio[1], label='{:0.2e}'.format(tau))
 
-		plot_vratio(tau, tau_vals, v_ratio)
+		# plt.plot(saved_time, v_ratio, label='{:0.2e}'.format(tau))
+		# plot_vratio(tau, tau_vals, v_ratio)
+
 
 		# plot_pos(pos_leapfrog)
 		# plt.show()
 		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau)
-
+	#
+	# plt.savefig('radialdrif_n=1.png', transparant=True)
+	# plt.close()
 	plt.legend()
 	plt.show()
 
