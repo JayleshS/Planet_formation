@@ -213,7 +213,7 @@ def plot_vratio(tau, tau_vals, v_ratio,label=None):
 		plt.scatter(tau,v_ratio[1][99000], c='indianred')
 
 	tauvals = np.geomspace(1e-3, 1e3, num=100)
-	vrvk = taustop(tauvals)
+	vrvk = taustop(tauvals, n=2)
 	plt.plot(tauvals, vrvk)
 
 
@@ -232,14 +232,21 @@ def plot_vratio(tau, tau_vals, v_ratio,label=None):
 	plt.legend()
 
 
-def taustop(tau):
-	#eta=0.0025, n=1
-	#eta = 0.0050, n=2
-	#eta=0.0025, n=3
+def taustop(tau, n=False):
+	if   n==1:
+		 eta=0.0025
 
-    eta = 0.005
-    vrvk = -eta/(tau+(tau**(-1)))
-    return np.abs(vrvk)
+	elif n==2:
+		 eta = 0.0050
+
+	elif n==3:
+		 eta=0.0025
+
+	else:
+		print 'hi'
+
+	vrvk = -eta/(tau+(tau**(-1)))
+	return np.abs(vrvk)
 
 
 
@@ -253,14 +260,14 @@ def vr_file(dt, tfinal, tau, save=True):
 		dr = (rji[:-1]-rji[1:])/dt
 
 		if save:
-			np.save("n=2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
+			np.save("test_n=2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
 
 		return time[:-1], dr/v_kep[:-1]
 
 
 def main():
 	dt     = 0.001
-	tfinal = 10
+	tfinal = 1.
 
 	calc_step = 10
 	omega_k = (2*np.pi)
@@ -280,10 +287,10 @@ def main():
 		#
 		# saved_time, v_ratio = vr_file(dt, tfinal, tau, save=True)
 
-		# v_ratio = np.load("n=2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
+		v_ratio = np.load("test_n=2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
 
 
-		# plt.plot(v_ratio[0], v_ratio[1], label='{:0.2e}'.format(tau))
+		plt.plot(v_ratio[0], v_ratio[1], label='{:0.2e}'.format(tau))
 
 		# plt.plot(saved_time, v_ratio, label='{:0.2e}'.format(tau))
 
@@ -297,10 +304,10 @@ def main():
 	#
 	# #
 	# print 'hi'
-	# plt.xlabel("time [yr]")
-	# plt.ylabel("semi major axis $a$ [AU]")
-	# plt.legend()
-	# plt.show()
+	plt.xlabel("time [yr]")
+	plt.ylabel("semi major axis $a$ [AU]")
+	plt.legend()
+	plt.show()
 	# plt.savefig('semimajoraxis_extra_tau.png', transparant=True)
 	# plt.close()
 
