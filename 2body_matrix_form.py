@@ -267,30 +267,30 @@ def vr_file(dt, tfinal, tau, save=True):
 
 def main():
 	dt     = 0.001
-	tfinal = 1.
+	tfinal = 5
 
 	calc_step = 10
 	omega_k = (2*np.pi)
 
 	# tau_vals= [5e1]
-	tau_vals = np.geomspace(2e-3, 1e3, num=15)
+	tau_vals = np.geomspace(2e-3, 1e3, num=10)
 	# tau_vals[0] = 3.5e-3
  	tau_lijstje= list(tau_vals)
 
 
 
-	# tau_lijstje = [1]
+	tau_lijstje = [1e-2]
 
 	for tau in tau_lijstje:
 		print 'calculating', tau
-		# pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+		pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 		#
-		# saved_time, v_ratio = vr_file(dt, tfinal, tau, save=True)
+		# saved_time, v_ratio = vr_file(dt, tfinal, tau, save=False)
 
-		v_ratio = np.load("test_n=2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
+		# v_ratio = np.load("test_n=2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
 
 
-		plt.plot(v_ratio[0], v_ratio[1], label='{:0.2e}'.format(tau))
+		# plt.plot(v_ratio[0], v_ratio[1], label='{:0.2e}'.format(tau))
 
 		# plt.plot(saved_time, v_ratio, label='{:0.2e}'.format(tau))
 
@@ -300,12 +300,11 @@ def main():
 
 		# plot_pos(pos_leapfrog)
 		# plt.show()
-		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
-	#
-	# #
-	# print 'hi'
+		plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
+
 	plt.xlabel("time [yr]")
 	plt.ylabel("semi major axis $a$ [AU]")
+	# plt.title("vrad is (vji[0] - v_gas[0])* 0.1")
 	plt.legend()
 	plt.show()
 	# plt.savefig('semimajoraxis_extra_tau.png', transparant=True)
