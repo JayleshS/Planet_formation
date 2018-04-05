@@ -98,6 +98,7 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 
 	return x_and_v, e_error, semi_major_axis, eccentricity, vkep_list, time_list
 
+
 def hermite(dt, tfinal):
 	particles, marr = fn.init_2body(0)
 	etot0 = fn.e_tot(particles, marr)
@@ -136,7 +137,7 @@ def hermite(dt, tfinal):
 	return x_and_v, e_error, ecc, a_list
 
 
-def plot_pos(particles, ax_range=1.2, tfinal=None):
+def plot_pos(particles, ax_range=1.2, tfinal=None, save=False, name='test'):
 	'''
 	Plots list (t, Np, 2, 3)
 	'''
@@ -155,8 +156,11 @@ def plot_pos(particles, ax_range=1.2, tfinal=None):
 	plt.ylim(-ax_range, ax_range)
 	plt.title('Total integration time: %s years' %tfinal)
 	plt.axis('equal')
-	# plt.savefig('5yrs_pos.png', transparant=True)
-	# plt.close()
+	if save:
+		plt.savefig('.png', transparant=True)
+		plt.close()
+	else:
+		plt.show()
 
 
 def plot_a(time, a, save=False):

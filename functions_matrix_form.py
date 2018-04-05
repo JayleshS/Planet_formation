@@ -70,7 +70,6 @@ def forces_migration(particles, marr, tau):
     v_gas[0] = -np.sin(theta) * (v_kep - v_head) #+ np.cos(theta) * (vji[0] - v_gas[0]) * 0.1
     v_gas[1] =  np.cos(theta) * (v_kep - v_head) #+ np.sin(theta) * (vji[1] - v_gas[1]) * 0.1
 
-
     acc[1, :] = - (vji - v_gas) / t_stop
     return acc, v_kep
 
@@ -82,7 +81,6 @@ def forces_total(particles, marr,tau):
     acc_grav = forces(particles, marr)
     acc_mig, v_kep = forces_migration(particles, marr, tau)
     acc_tot = acc_grav + acc_mig
-
 
     return acc_tot, v_kep
 
