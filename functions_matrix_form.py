@@ -65,8 +65,12 @@ def forces_migration(particles, marr, tau, eta=0.004, v_r=None):
 
     # calculate vkep and headwind
     v_kep  = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
-    v_head = eta * v_kep
+    v_head = gaussian(rad,r0=0.5, sigma=0.01, n=3) * v_kep
 
+    # def gaussian(rad, r0=0.5, sigma=0.01, n=3):
+    #     gauss = 0.4*np.exp(-0.5*((rad - r0) / sigma)**2)
+    #     eta = n*0.05**2
+    #     return gauss + eta
     '''9975, 9987, 0.004'''
 
     # t stop from dimensionless to yrs
@@ -143,6 +147,6 @@ def gaussian(rad, r0=0.5, sigma=0.01, n=3):
     return gauss + eta
 
 
-x = np.linspace(0, 1, num=1000)
-plt.plot(x, gaussian(x))
-plt.show()
+# x = np.linspace(0, 1, num=1000)
+# plt.plot(x, gaussian(x))
+# plt.show()

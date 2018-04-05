@@ -261,31 +261,30 @@ def main():
 	# tau = 1e2
 
 
-
 	# tau_lijstje = [1.0e-2, 1.0e-1]
 
 	for tau in tau_lijstje:
 		print 'calculating', tau
-		# pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+		pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 		#
 		# saved_time, v_ratio = vr_file(dt, tfinal, tau, save=False)
 
-		v_ratio = np.load("5april_vrad_might_work_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
+		# v_ratio = np.load("5april_vrad_might_work_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
 
 
 		# plt.plot(v_ratio[0,8000:12000], v_ratio[1,8000:12000], label='{:0.2e}'.format(tau))
 		# plt.plot(saved_time, v_ratio, label='{:0.2e}'.format(tau))
-		plot_vratio(tau, v_ratio,min=8000, max=12000)
+		# plot_vratio(tau, v_ratio,min=8000, max=12000)
 
 
 		# plot_pos(pos_leapfrog)
 		# plt.show()
-		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
+		plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
 
 	# plt.xlabel("time [yr]")
 	# plt.ylabel("vratio")
-	plt.xscale("Log")
-	plt.yscale("Log")
+	# plt.xscale("Log")
+	# plt.yscale("Log")
 	# plt.ylabel("semi major axis $a$ [AU]")
 	# plt.title("vrad is (vji[0] - v_gas[0])* 0.1")
 	plt.legend()
