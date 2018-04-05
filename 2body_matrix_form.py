@@ -69,16 +69,16 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 
 	while time < tfinal:
 		if drag:
-			acc, v_kep = fn.forces_total(particles, marr, tau)
+			acc, v_kep, v_r = fn.forces_total(particles, marr, tau)
 		else:
 			acc = fn.forces(particles, marr)
 			v_kep=[]
-			
+
 		particles[:,1,:] += acc* dt/2
 		particles[:,0,:] += particles[:,1,:]*dt
 
 		if drag:
-			acc, v_kep = fn.forces_total(particles, marr, tau)
+			acc, v_kep, v_r = fn.forces_total(particles, marr, tau, v_r=v_r)
 		else:
 			acc = fn.forces(particles, marr)
 		particles[:,1,:] += acc* dt/2
@@ -260,17 +260,17 @@ def taustop(tau, n=False):
 
 
 def vr_file(dt, tfinal, tau, save=True):
-		pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+	pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 
-		pos_arr = np.array(pos_leapfrog)
-		diff = (pos_arr[:, 1, 0, :] - pos_arr[:, 0, 0, :])**2
-		rji = np.sqrt(np.sum(diff, axis=1))
-		dr = (rji[:-1]-rji[1:])/dt
+	pos_arr = np.array(pos_leapfrog)
+	diff = (pos_arr[:, 1, 0, :] - pos_arr[:, 0, 0, :])**2
+	rji = np.sqrt(np.sum(diff, axis=1))
+	dr = (rji[:-1]-rji[1:])/dt
 
-		if save:
-			np.save("5april_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
+	if save:
+		np.save("5april_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
 
-		return time[:-1], dr/v_kep[:-1]
+	return time[:-1], dr/v_kep[:-1]
 
 
 def main():

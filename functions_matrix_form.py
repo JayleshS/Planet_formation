@@ -50,7 +50,7 @@ def forces_hermite(particles, marr):
 
     return acc, jer
 
-def forces_migration(particles, marr, tau, eta=0.004):
+def forces_migration(particles, marr, tau, eta=0.004, v_r=None):
     acc = np.zeros((pars.Np,3))
     rji = particles[1, 0, :] - particles[0, 0, :]
     vji = particles[1, 1, :] - particles[0, 1, :]
@@ -59,7 +59,8 @@ def forces_migration(particles, marr, tau, eta=0.004):
     rad = np.sqrt(rji[0]**2 + rji[1]**2)
     theta = np.arctan2(rji[1], rji[0])
 
-    v_r    = np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
+    if not v_r:
+        v_r    = np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
     v_phi  = - np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
 
     # calculate vkep and headwind
@@ -91,18 +92,18 @@ def forces_migration(particles, marr, tau, eta=0.004):
     # acc[1, 1] = np.sin(theta) * a_r_gas + np.cos(theta) * a_phi
 
     acc[1, :] = - (vji - v_gas) / t_stop
-    return acc, v_kep
+    return acc, v_kep, v_r
 
 
 
-def forces_total(particles, marr,tau):
+def forces_total(particles, marr, tau, v_r=None):
     acc_tot = np.zeros((pars.Np, 3))
 
     acc_grav = forces(particles, marr)
-    acc_mig, v_kep = forces_migration(particles, marr, tau)
+    acc_mig, v_kep, v_r = forces_migration(particles, marr, tau, v_r=v_r)
     acc_tot = acc_grav + acc_mig
 
-    return acc_tot, v_kep
+    return acc_tot, v_kep, v_r
 
 
 
