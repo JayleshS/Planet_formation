@@ -73,6 +73,7 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 		else:
 			acc = fn.forces(particles, marr)
 			v_kep=[]
+
 		particles[:,1,:] += acc* dt/2
 		particles[:,0,:] += particles[:,1,:]*dt
 
@@ -97,6 +98,7 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 	e_error = (etot1 - etot0) / etot0
 
 	return x_and_v, e_error, semi_major_axis, eccentricity, vkep_list, time_list
+
 
 def hermite(dt, tfinal):
 	particles, marr = fn.init_2body(0)
@@ -136,7 +138,7 @@ def hermite(dt, tfinal):
 	return x_and_v, e_error, ecc, a_list
 
 
-def plot_pos(particles, ax_range=1.2, tfinal=None):
+def plot_pos(particles, ax_range=1.2, tfinal=None, save=False, name='test'):
 	'''
 	Plots list (t, Np, 2, 3)
 	'''
@@ -155,8 +157,11 @@ def plot_pos(particles, ax_range=1.2, tfinal=None):
 	plt.ylim(-ax_range, ax_range)
 	plt.title('Total integration time: %s years' %tfinal)
 	plt.axis('equal')
-	# plt.savefig('5yrs_pos.png', transparant=True)
-	# plt.close()
+	if save:
+		plt.savefig('.png', transparant=True)
+		plt.close()
+	else:
+		plt.show()
 
 
 def plot_a(time, a, save=False):
@@ -233,6 +238,9 @@ def plot_vratio(tau, tau_vals, v_ratio,label=None):
 
 
 def taustop(tau, n=False):
+	"""
+	Takes value for tau and returns ratio of vr and vk
+	"""
 	if   n==1:
 		 eta=0.0025
 
@@ -260,7 +268,7 @@ def vr_file(dt, tfinal, tau, save=True):
 		dr = (rji[:-1]-rji[1:])/dt
 
 		if save:
-			np.save("5april_v_r_times_05_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
+			np.save("5april_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
 
 		return time[:-1], dr/v_kep[:-1]
 
@@ -277,6 +285,7 @@ def main():
 	tau_vals[0] = 3.5e-3
  	tau_lijstje= list(tau_vals)
 	tau_lijstje.append(1.)
+	tau = 1e2
 
 
 
