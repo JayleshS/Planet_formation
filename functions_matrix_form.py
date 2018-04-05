@@ -78,20 +78,19 @@ def forces_migration(particles, marr, tau, eta=0.004, v_r=None):
 
     # calculate accelerations in cylindrical coords
     a_phi = - (v_phi - v_phi_gas) / t_stop
-    print "rad:", rad
-    print "v_r:", v_r
-    # print "t_stop:", t_stop
-    # a_r_gas = (v_phi**2 / rad) - (v_kep**2 / rad**2) * rad - v_r / t_stop
 
 
-    v_gas    = np.zeros(3)
-    v_gas[0] = -np.sin(theta) * (v_kep - v_head)# + np.cos(theta) * v_r
-    v_gas[1] =  np.cos(theta) * (v_kep - v_head)# + np.sin(theta) * v_r
+    a_r_gas = (v_phi**2 / rad) - (v_kep**2 / rad**2) * rad - v_r / t_stop
 
-    # acc[1, 0] = np.cos(theta) * a_r_gas - np.sin(theta) * a_phi
-    # acc[1, 1] = np.sin(theta) * a_r_gas + np.cos(theta) * a_phi
 
-    acc[1, :] = - (vji - v_gas) / t_stop
+    # v_gas    = np.zeros(3)
+    # v_gas[0] = -np.sin(theta) * (v_kep - v_head)# + np.cos(theta) * v_r
+    # v_gas[1] =  np.cos(theta) * (v_kep - v_head)# + np.sin(theta) * v_r
+
+    acc[1, 0] = np.cos(theta) * a_r_gas - np.sin(theta) * a_phi
+    acc[1, 1] = np.sin(theta) * a_r_gas + np.cos(theta) * a_phi
+
+    # acc[1, :] = - (vji - v_gas) / t_stop
     return acc, v_kep, v_r
 
 

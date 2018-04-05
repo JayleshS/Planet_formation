@@ -205,53 +205,26 @@ def plot_error(timestep, tfinal):
 	plt.show()
 
 
-def plot_vratio(tau, tau_vals, v_ratio,label=None):
+def plot_vratio(tau, v_ratio,min=0, max=-1):
 
-	if tau <= 3:
-		print "alleen 7000",tau
-		plt.scatter(tau,v_ratio[1][7000], c='indianred')
-
-	elif tau >5. and tau<5.5:
-		plt.scatter(tau,v_ratio[1][40000], c='indianred', label=label)
-	else:
-		print "alleen 99000",tau
-		plt.scatter(tau,v_ratio[1][99000], c='indianred')
+	plt.scatter(tau,np.average(v_ratio[1,min:max]))
 
 	tauvals = np.geomspace(1e-3, 1e3, num=100)
-	vrvk = taustop(tauvals, n=2)
-	plt.plot(tauvals, vrvk)
-
-
-	# '''gemiddelde waarden voor tau= 3e2, 5e2'''
-	# plt.scatter(3.00e2, 2.66549e-5, c='g')
-	# plt.scatter(5.00e2,   1.597e-5, c='g')
+	plt.plot(tauvals, taustop(tauvals, eta=0.01))
 
 	plt.axvline(x=1, linestyle="dotted", c="indianred")
 	plt.xscale("Log")
 	plt.yscale("Log")
 	plt.xlabel("$\\tau_{fric}$")
 	plt.ylabel("$v_{r}/v_{K}$")
-	plt.title("Radial drift for n=2")
-	# plt.ylim(1e-5,1e-2)
-	plt.xlim(1e-3,3e3)
+	plt.title("Radial drift for $\eta$=0.004")
 	plt.legend()
 
 
-def taustop(tau, n=False):
+def taustop(tau, eta=0.004):
 	"""
 	Takes value for tau and returns ratio of vr and vk
 	"""
-	if   n==1:
-		 eta=0.0025
-
-	elif n==2:
-		 eta = 0.0050
-
-	elif n==3:
-		 eta=0.0025
-
-	else:
-		print 'hi'
 
 	vrvk = -eta/(tau+(tau**(-1)))
 	return np.abs(vrvk)
@@ -268,14 +241,14 @@ def vr_file(dt, tfinal, tau, save=True):
 	dr = (rji[:-1]-rji[1:])/dt
 
 	if save:
-		np.save("5april_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
+		np.save("5april_vrad_might_work_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
 
 	return time[:-1], dr/v_kep[:-1]
 
 
 def main():
 	dt     = 0.001
-	tfinal = 0.1
+	tfinal = 75
 
 	calc_step = 10
 	omega_k = (2*np.pi)
@@ -285,35 +258,35 @@ def main():
 	tau_vals[0] = 3.5e-3
  	tau_lijstje= list(tau_vals)
 	tau_lijstje.append(1.)
-	tau = 1e2
+	# tau = 1e2
 
 
 
-	tau_lijstje = [1e-1,1]
+	# tau_lijstje = [1.0e-2, 1.0e-1]
 
-	# for tau in tau_lijstje:
-	# 	print 'calculating', tau
-	pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+	for tau in tau_lijstje:
+		print 'calculating', tau
+		# pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 		#
 		# saved_time, v_ratio = vr_file(dt, tfinal, tau, save=False)
 
-		# v_ratio = np.load("test_n=2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
+		v_ratio = np.load("5april_vrad_might_work_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
 
 
-		# plt.plot(v_ratio[0], v_ratio[1], label='{:0.2e}'.format(tau))
-
+		# plt.plot(v_ratio[0,8000:12000], v_ratio[1,8000:12000], label='{:0.2e}'.format(tau))
 		# plt.plot(saved_time, v_ratio, label='{:0.2e}'.format(tau))
-
-
-		# plot_vratio(tau, tau_vals, v_ratio)
+		plot_vratio(tau, v_ratio,min=8000, max=12000)
 
 
 		# plot_pos(pos_leapfrog)
 		# plt.show()
-	plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
+		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
 
-	plt.xlabel("time [yr]")
-	plt.ylabel("semi major axis $a$ [AU]")
+	# plt.xlabel("time [yr]")
+	# plt.ylabel("vratio")
+	plt.xscale("Log")
+	plt.yscale("Log")
+	# plt.ylabel("semi major axis $a$ [AU]")
 	# plt.title("vrad is (vji[0] - v_gas[0])* 0.1")
 	plt.legend()
 	plt.show()
