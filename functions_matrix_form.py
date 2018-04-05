@@ -135,3 +135,14 @@ def get_orbital_elements(particles, marr):
     a = (sum(ang[1, :]**2)) / (pars.gN*sum(marr)*(1-sum(e**2)))
 
     return e, a
+
+
+def gaussian(rad, r0=0.5, sigma=0.01, n=3):
+    gauss = 0.4*np.exp(-0.5*((rad - r0) / sigma)**2)
+    eta = n*0.05**2
+    return gauss + eta
+
+
+x = np.linspace(0, 1, num=1000)
+plt.plot(x, gaussian(x))
+plt.show()
