@@ -81,7 +81,7 @@ def forces_migration(particles, marr, tau, eta=0.004, v_r=None):
     print "rad:", rad
     print "v_r:", v_r
     # print "t_stop:", t_stop
-    # a_r_gas = (v_phi**2 / rad) - (v_kep**2 / v_r**2) * rad - v_r / t_stop
+    # a_r_gas = (v_phi**2 / rad) - (v_kep**2 / rad**2) * rad - v_r / t_stop
 
 
     v_gas    = np.zeros(3)
