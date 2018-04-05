@@ -73,6 +73,7 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 		else:
 			acc = fn.forces(particles, marr)
 			v_kep=[]
+			
 		particles[:,1,:] += acc* dt/2
 		particles[:,0,:] += particles[:,1,:]*dt
 
@@ -237,6 +238,9 @@ def plot_vratio(tau, tau_vals, v_ratio,label=None):
 
 
 def taustop(tau, n=False):
+	"""
+	Takes value for tau and returns ratio of vr and vk
+	"""
 	if   n==1:
 		 eta=0.0025
 
@@ -281,23 +285,24 @@ def main():
 	tau_vals[0] = 3.5e-3
  	tau_lijstje= list(tau_vals)
 	tau_lijstje.append(1.)
+	tau = 1e2
 
 
 
 	tau_lijstje = [1e-1,1]
 
-	for tau in tau_lijstje:
-		print 'calculating', tau
-		# pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+	# for tau in tau_lijstje:
+	# 	print 'calculating', tau
+	pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 		#
-		saved_time, v_ratio = vr_file(dt, tfinal, tau, save=False)
+		# saved_time, v_ratio = vr_file(dt, tfinal, tau, save=False)
 
 		# v_ratio = np.load("test_n=2_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
 
 
 		# plt.plot(v_ratio[0], v_ratio[1], label='{:0.2e}'.format(tau))
 
-		plt.plot(saved_time, v_ratio, label='{:0.2e}'.format(tau))
+		# plt.plot(saved_time, v_ratio, label='{:0.2e}'.format(tau))
 
 
 		# plot_vratio(tau, tau_vals, v_ratio)
@@ -305,7 +310,7 @@ def main():
 
 		# plot_pos(pos_leapfrog)
 		# plt.show()
-		# plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
+	plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
 
 	plt.xlabel("time [yr]")
 	plt.ylabel("semi major axis $a$ [AU]")

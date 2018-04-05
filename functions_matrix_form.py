@@ -50,7 +50,7 @@ def forces_hermite(particles, marr):
 
     return acc, jer
 
-def forces_migration(particles, marr, tau):
+def forces_migration(particles, marr, tau, eta=0.004):
     acc = np.zeros((pars.Np,3))
     rji = particles[1, 0, :] - particles[0, 0, :]
     vji = particles[1, 1, :] - particles[0, 1, :]
@@ -59,17 +59,36 @@ def forces_migration(particles, marr, tau):
     rad = np.sqrt(rji[0]**2 + rji[1]**2)
     theta = np.arctan2(rji[1], rji[0])
 
-    v_kep  = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
-    v_head = 0.004 * v_kep
     v_r    = np.cos(theta) * vji[0] + np.sin(theta) * vji[1]
+    v_phi  = - np.sin(theta) * vji[0] + np.cos(theta) * vji[1]
+
+    # calculate vkep and headwind
+    v_kep  = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
+    v_head = eta * v_kep
 
     '''9975, 9987, 0.004'''
 
+    # t stop from dimensionless to yrs
     t_stop = tau / (v_kep / rad)
 
+    # calculate velocities of gas in cylindrical coords
+    v_phi_gas = v_kep - v_head
+    v_r_gas = 0
+
+    # calculate accelerations in cylindrical coords
+    a_phi = - (v_phi - v_phi_gas) / t_stop
+    print "rad:", rad
+    print "v_r:", v_r
+    # print "t_stop:", t_stop
+    # a_r_gas = (v_phi**2 / rad) - (v_kep**2 / v_r**2) * rad - v_r / t_stop
+
+
     v_gas    = np.zeros(3)
-    v_gas[0] = -np.sin(theta) * (v_kep - v_head) + np.cos(theta) * v_r
-    v_gas[1] =  np.cos(theta) * (v_kep - v_head) + np.sin(theta) * v_r
+    v_gas[0] = -np.sin(theta) * (v_kep - v_head)# + np.cos(theta) * v_r
+    v_gas[1] =  np.cos(theta) * (v_kep - v_head)# + np.sin(theta) * v_r
+
+    # acc[1, 0] = np.cos(theta) * a_r_gas - np.sin(theta) * a_phi
+    # acc[1, 1] = np.sin(theta) * a_r_gas + np.cos(theta) * a_phi
 
     acc[1, :] = - (vji - v_gas) / t_stop
     return acc, v_kep
