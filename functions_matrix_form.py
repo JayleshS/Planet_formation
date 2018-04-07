@@ -140,6 +140,12 @@ def get_orbital_elements(particles, marr):
 
     return e, a
 
+def calculate_vratio(dt, pos_leapfrog):
+	pos_arr = np.array(pos_leapfrog)
+	diff = (pos_arr[:, 1, 0, :] - pos_arr[:, 0, 0, :])**2
+	rji = np.sqrt(np.sum(diff, axis=1))
+	dr = (rji[:-1]-rji[1:])/dt
+	return dr
 
 def gaussian(rad, r0=0.5, sigma=0.01, n=3):
     gauss = 0.4*np.exp(-0.5*((rad - r0) / sigma)**2)
