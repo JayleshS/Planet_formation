@@ -278,12 +278,12 @@ def main():
 
 
 	# tau_lijstje=[0.002,0.00859505945175,0.0369375234896, 0.158740105197,0.682190320772,2.93173318222,12.5992104989,54.1454816418,232.691816878,1000.0]
-
+	# tau_we_need_high_tfinal = [3.5e-3, 0.008595059451754268,12.599210498948729,54.14548164181537,232.6918168776362,1000.0]
 	tau_lijstje = [3.5e-3]
 
 	for tau in tau_lijstje:
 		print 'calculating', tau
-		save_all_information(dt, tfinal, tau)
+		# save_all_information(dt, tfinal, tau)
 
 
 		#
