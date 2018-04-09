@@ -86,9 +86,6 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 		x_and_v.append(particles.tolist())
 		# print 'next'
 		ecc, a = fn.get_orbital_elements(particles, marr)
-		'''Stop simulation when low semi-major axis is reached"'''
-		if a < 0.0148:
-			break
 
 		eccentricity.append(np.sqrt(sum(ecc)**2))
 		semi_major_axis.append(a)
@@ -96,6 +93,10 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 		time_list.append(time)
 
 		time += dt
+
+		'''Stop simulation when low semi-major axis is reached"'''
+		if a < 0.0148:
+			break
 
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
@@ -252,19 +253,20 @@ def vr_file(dt, tfinal, tau, save=True):
 def save_all_information(dt, tfinal, tau):
 	'''save (all or some) information, savez saves the arrays seperatly, each accesible by keywords'''
 
-	pos_leapfrog, e_error, a_leapfrog, eccentricity, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+	pos_leapfrog, _, a_leapfrog, _, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 	# pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 
 	# np.save("pos_vkep_time_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau), [np.array(pos_leapfrog), np.array(v_kep), np.array(time)])
 	# np.savez("arrays_pos_vkep_time_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time )
-	np.savez("cutoff_a_0.0148_all_info_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time,\
-	 e_error=e_error, a_leapfrog=a_leapfrog, eccentricity=eccentricity)
+	np.savez("a_0.0148_some_info_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time,\
+	a_leapfrog=a_leapfrog)
+	 # e_error=e_error, a_leapfrog=a_leapfrog, eccentricity=eccentricity)
 
 
 
 def main():
 	dt     = 0.0001
-	tfinal = 100
+	tfinal = 200
 
 	calc_step = 10
 	omega_k = (2*np.pi)
@@ -277,14 +279,14 @@ def main():
 
 	# tau_lijstje=[0.002,0.00859505945175,0.0369375234896, 0.158740105197,0.682190320772,2.93173318222,12.5992104989,54.1454816418,232.691816878,1000.0]
 
-	# tau_lijstje = [1.0]
+	tau_lijstje = [3.5e-3]
 
 	for tau in tau_lijstje:
 		print 'calculating', tau
-		# save_all_information(dt, tfinal, tau)
+		save_all_information(dt, tfinal, tau)
 
 
-		# 
+		#
 		# pvt_file = np.load("cutoff_a_0.0148_all_info_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".npz")
 		#
 		# dr = fn.calculate_vratio(dt, pvt_file['pos_leapfrog'])
