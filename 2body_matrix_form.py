@@ -97,6 +97,10 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 		if a < 0.15:
 			break
 
+		'''Stop simulation when low semi-major axis is reached"'''
+		if a < 0.0148:
+			break
+
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
 
@@ -208,12 +212,13 @@ def plot_error(timestep, tfinal):
 	plt.show()
 
 
-def plot_vratio(tau, v_ratio,min=0, max=-1):
+def plot_vratio_vs_tau(tau, v_ratio,min=0, max=-1):
 
-	plt.scatter(tau,np.average(v_ratio[1,min:max]))
+	plt.scatter(tau,np.average(v_ratio[int(min):int(max)]))
 
 	tauvals = np.geomspace(1e-3, 1e3, num=100)
-	plt.plot(tauvals, taustop(tauvals, eta=0.01))
+	plt.plot(tauvals, taustop(tauvals, n=3))
+	# gaussian(rad, r0=0.5, sigma=0.01, n=3)
 
 	plt.axvline(x=1, linestyle="dotted", c="indianred")
 	plt.xscale("Log")
@@ -224,10 +229,12 @@ def plot_vratio(tau, v_ratio,min=0, max=-1):
 	plt.legend()
 
 
-def taustop(tau, eta=0.004):
+def taustop(tau, n=3):
 	"""
 	Takes value for tau and returns ratio of vr and vk
 	"""
+
+	eta = n*0.05**2
 
 	vrvk = -eta/(tau+(tau**(-1)))
 	return np.abs(vrvk)
@@ -235,60 +242,84 @@ def taustop(tau, eta=0.004):
 
 
 
-def vr_file(dt, tfinal, tau, save=True):
-	pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 
-	pos_arr = np.array(pos_leapfrog)
-	diff = (pos_arr[:, 1, 0, :] - pos_arr[:, 0, 0, :])**2
-	rji = np.sqrt(np.sum(diff, axis=1))
-	dr = (rji[:-1]-rji[1:])/dt
+def vr_file(dt, tfinal, tau, save=True):
+	pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+
+	dr = fn.calculate_vratio(dt, pos_leapfrog)
 
 	if save:
-		np.save("5april_vrad_might_work_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]),dr/v_kep[:-1]])
+		np.save("test_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]), dr/v_kep[:-1]] )
 
 	return time[:-1], dr/v_kep[:-1]
 
+def save_all_information(dt, tfinal, tau):
+	'''save (all or some) information, savez saves the arrays seperatly, each accesible by keywords'''
+
+	pos_leapfrog, _, a_leapfrog, _, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+	# pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+
+	# np.save("pos_vkep_time_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau), [np.array(pos_leapfrog), np.array(v_kep), np.array(time)])
+	# np.savez("arrays_pos_vkep_time_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time )
+	np.savez("a_0.0148_some_info_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time,\
+	a_leapfrog=a_leapfrog)
+	 # e_error=e_error, a_leapfrog=a_leapfrog, eccentricity=eccentricity)
+
+
 
 def main():
-	dt     = 0.001
-	tfinal = 75
+	dt     = 0.0001
+	tfinal = 200
 
 	calc_step = 10
 	omega_k = (2*np.pi)
 
-	# tau_vals= [5e1]
-	tau_vals = np.geomspace(2e-2, 1e-1, num=8)
+	tau_vals = np.geomspace(2e-3, 1e3, num=10)
 	tau_vals[0] = 3.5e-3
  	tau_lijstje= list(tau_vals)
-	# tau_lijstje.append(1.)
-	# tau = 1e2
+	tau_lijstje.append(1.)
 
 
-	# tau_lijstje = [5]
+	# tau_lijstje=[0.002,0.00859505945175,0.0369375234896, 0.158740105197,0.682190320772,2.93173318222,12.5992104989,54.1454816418,232.691816878,1000.0]
+	# tau_we_need_high_tfinal = [3.5e-3, 0.008595059451754268,12.599210498948729,54.14548164181537,232.6918168776362,1000.0]
+	tau_lijstje = [3.5e-3]
 
 	for tau in tau_lijstje:
 		print 'calculating', tau
-		pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+		# save_all_information(dt, tfinal, tau)
+
+
 		#
-		# saved_time, v_ratio = vr_file(dt, tfinal, tau, save=False)
+		# pvt_file = np.load("cutoff_a_0.0148_all_info_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".npz")
+		#
+		# dr = fn.calculate_vratio(dt, pvt_file['pos_leapfrog'])
+		# v_ratio = dr/pvt_file['v_kep'][:-1]
+		#
+		# plt.plot( pvt_file['time'][:-1], v_ratio, label='{:0.2e}'.format(tau))
+		# plot_vratio_vs_tau(tau, v_ratio, min=2/dt,max=6/dt)
 
-		# v_ratio = np.load("5april_vrad_might_work_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau)+".npy")
+		# plt.plot(pvt_file['time'], pvt_file['a_leapfrog'], label='{:0.2e}'.format(tau))
 
 
-		# plt.plot(v_ratio[0,8000:12000], v_ratio[1,8000:12000], label='{:0.2e}'.format(tau))
-		# plt.plot(saved_time, v_ratio, label='{:0.2e}'.format(tau))
-		# plot_vratio(tau, v_ratio,min=8000, max=12000)
+
+		'''dit is voor np.save manier van opslaan'''
+		# pos_leapfrog, v_kep, time =\
+		# np.load("pos_vkep_time_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".npy")
+		# v_ratio = [ time[:-1], dr/v_kep[:-1] ]
+		# plt.plot(v_ratio[0], v_ratio[1], label='{:0.2e}'.format(tau))
+
+
+
 
 
 		# plot_pos(pos_leapfrog)
 		# plt.show()
-		plt.plot(time, a_leapfrog, label='{:0.2e}'.format(tau))
 
-	# plt.xlabel("time [yr]")
+	plt.xlabel("time [yr]")
 	# plt.ylabel("vratio")
 	# plt.xscale("Log")
 	# plt.yscale("Log")
-	# plt.ylabel("semi major axis $a$ [AU]")
+	plt.ylabel("semi major axis $a$ [AU]")
 	# plt.title("vrad is (vji[0] - v_gas[0])* 0.1")
 	plt.legend()
 	plt.show()

@@ -146,6 +146,12 @@ def gaussian(rad, r0=0.5, sigma=0.05, n=3):
     eta = n*0.05**2
     return gauss + eta
 
+def calculate_vratio(dt, pos_leapfrog):
+    pos_arr = np.array(pos_leapfrog)
+    diff = (pos_arr[:, 1, 0, :] - pos_arr[:, 0, 0, :])**2
+    rji = np.sqrt(np.sum(diff, axis=1))
+    dr = (rji[:-1]-rji[1:])/dt
+    return dr
 
 # x = np.linspace(0, 1, num=1000)
 # plt.plot(x, gaussian(x))
