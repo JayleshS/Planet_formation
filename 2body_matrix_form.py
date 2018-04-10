@@ -254,11 +254,16 @@ def load_files(dt, tfinal, tau):
 	particles = np.zeros([2,2,3])
 	marr = np.zeros(2)
 
-	[[thing[0], particles[0,0,0], particles[0,0,1], particles[0,0,2], particles[0,1,0], particles[0,1,1], particles[0,1,2], marr[0]],\
-	 [thing[1], particles[1,0,0], particles[1,0,1], particles[1,0,2], particles[1,1,0], particles[1,1,1], particles[1,1,2], marr[1]] ] = \
-	 np.loadtxt("object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
+	# [[thing[0], particles[0,0,0], particles[0,0,1], particles[0,0,2], particles[0,1,0], particles[0,1,1], particles[0,1,2], marr[0]],\
+	#  [thing[1], particles[1,0,0], particles[1,0,1], particles[1,0,2], particles[1,1,0], particles[1,1,1], particles[1,1,2], marr[1]] ] = \
+	#  np.loadtxt("object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
 
-	return particles, marr
+	whole_arr = np.loadtxt("object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
+	amount_of_steps = len(whole_arr[:, 0])/2
+	for step in amount_of_steps:
+		pass
+
+	# return particles, marr
 
 def vr_file(dt, tfinal, tau, save=True):
 	pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
@@ -284,7 +289,7 @@ def save_all_information(dt, tfinal, tau):
 
 def main():
 	dt     = 0.0001
-	tfinal = 0.0001
+	tfinal = 0.0002
 
 	calc_step = 10
 	omega_k = (2*np.pi)
@@ -307,7 +312,7 @@ def main():
 		# leapfrog(dt, tfinal, tau)
 
 
-		particles, marr = load_files(dt,tfinal,tau)
+		load_files(dt,tfinal,tau)
 
 		# dr = fn.calculate_vratio(dt, particles)
 		#
