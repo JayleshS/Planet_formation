@@ -92,8 +92,8 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 
 
 		for i in [0,1]:
-			np.savetxt(save_file,np.c_[i, particles[i,0,0], particles[i,0,1], particles[i,0,2], \
-			particles[i,1,0], particles[i,1,1], particles[i,1,2], marr[i]], delimiter=',', fmt='%.10e')
+			np.savetxt(save_file,np.c_[i, time, particles[i,0,0], particles[i,0,1], particles[i,0,2], \
+			particles[i,1,0], particles[i,1,1], particles[i,1,2], marr[i], np.array([v_kep])], delimiter=',', fmt='%.10e')
 
 		# np.savetxt(save_a,a)
 
@@ -253,10 +253,11 @@ def load_files(dt, tfinal, tau):
 	thing = np.zeros(2)
 	particles = np.zeros([2,2,3])
 	marr = np.zeros(2)
+	v_kep = np.zeros(1)
 
-	[[thing[0], particles[0,0,0], particles[0,0,1], particles[0,0,2], particles[0,1,0], particles[0,1,1], particles[0,1,2], marr[0]],\
-	 [thing[1], particles[1,0,0], particles[1,0,1], particles[1,0,2], particles[1,1,0], particles[1,1,1], particles[1,1,2], marr[1]] ] = \
-	 np.loadtxt("object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
+	[[thing[0], time, particles[0,0,0], particles[0,0,1], particles[0,0,2], particles[0,1,0], particles[0,1,1], particles[0,1,2], marr[0], rubbish],\
+	 [thing[1], time, particles[1,0,0], particles[1,0,1], particles[1,0,2], particles[1,1,0], particles[1,1,1], particles[1,1,2], marr[1], v_kep  ] ] = \
+	 np.loadtxt( "object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
 
 	return particles, marr
 
@@ -306,7 +307,9 @@ def main():
 
 		# leapfrog(dt, tfinal, tau)
 
-
+	 	# file_to_load = np.loadtxt( "object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
+		# print file_to_load
+		# #
 		particles, marr = load_files(dt,tfinal,tau)
 
 		# dr = fn.calculate_vratio(dt, particles)
