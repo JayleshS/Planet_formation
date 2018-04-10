@@ -93,6 +93,9 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 		time_list.append(time)
 
 		time += dt
+		# print time, a
+		if a < 0.15:
+			break
 
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
@@ -147,8 +150,8 @@ def plot_pos(particles, ax_range=1.2, tfinal=None, save=False, name='test'):
 	plt.plot(xarr[:, 0, 0, 0], xarr[:, 0, 0, 1], c='y')
 	plt.plot(xarr[:, 1, 0, 0], xarr[:, 1, 0, 1], label='Test particle', c='indianred')
 
-	plt.scatter(1.,0, c="b", label='Initial postition')
-	plt.scatter(0,0, c="y", label='Sun')
+	# plt.scatter(1.,0, c="b", label='Initial postition')
+	# plt.scatter(0,0, c="y", label='Sun')
 
 	plt.legend()
 	plt.xlabel('$x_{pos}$(au)')
@@ -254,14 +257,14 @@ def main():
 	omega_k = (2*np.pi)
 
 	# tau_vals= [5e1]
-	tau_vals = np.geomspace(2e-3, 1e3, num=10)
+	tau_vals = np.geomspace(2e-2, 1e-1, num=8)
 	tau_vals[0] = 3.5e-3
  	tau_lijstje= list(tau_vals)
-	tau_lijstje.append(1.)
+	# tau_lijstje.append(1.)
 	# tau = 1e2
 
 
-	# tau_lijstje = [1.0e-2, 1.0e-1]
+	# tau_lijstje = [5]
 
 	for tau in tau_lijstje:
 		print 'calculating', tau

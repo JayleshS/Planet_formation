@@ -141,7 +141,7 @@ def get_orbital_elements(particles, marr):
     return e, a
 
 
-def gaussian(rad, r0=0.5, sigma=0.01, n=3):
+def gaussian(rad, r0=0.5, sigma=0.05, n=3):
     gauss = 0.4*np.exp(-0.5*((rad - r0) / sigma)**2)
     eta = n*0.05**2
     return gauss + eta
