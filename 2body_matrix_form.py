@@ -87,6 +87,10 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 		# print 'next'
 		ecc, a = fn.get_orbital_elements(particles, marr)
 
+		if a < 6.0:
+			time += dt
+			continue
+
 		eccentricity.append(np.sqrt(sum(ecc)**2))
 		semi_major_axis.append(a)
 		vkep_list.append(v_kep)
@@ -100,6 +104,7 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 
 	etot1 = fn.e_tot(particles, marr)
 	e_error = (etot1 - etot0) / etot0
+
 
 	return x_and_v, e_error, semi_major_axis, eccentricity, vkep_list, time_list
 
@@ -253,20 +258,18 @@ def vr_file(dt, tfinal, tau, save=True):
 def save_all_information(dt, tfinal, tau):
 	'''save (all or some) information, savez saves the arrays seperatly, each accesible by keywords'''
 
-	pos_leapfrog, _, a_leapfrog, _, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
-	# pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+	pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 
 	# np.save("pos_vkep_time_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau), [np.array(pos_leapfrog), np.array(v_kep), np.array(time)])
 	# np.savez("arrays_pos_vkep_time_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time )
-	np.savez("a_0.0148_some_info_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time,\
-	a_leapfrog=a_leapfrog)
+	# np.savez("rubbish_a_0.0148_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time)
 	 # e_error=e_error, a_leapfrog=a_leapfrog, eccentricity=eccentricity)
 
 
 
 def main():
 	dt     = 0.0001
-	tfinal = 200
+	tfinal = 40
 
 	calc_step = 10
 	omega_k = (2*np.pi)
@@ -278,6 +281,7 @@ def main():
 
 
 	# tau_lijstje=[0.002,0.00859505945175,0.0369375234896, 0.158740105197,0.682190320772,2.93173318222,12.5992104989,54.1454816418,232.691816878,1000.0]
+
 	# tau_we_need_high_tfinal = [3.5e-3, 0.008595059451754268,12.599210498948729,54.14548164181537,232.6918168776362,1000.0]
 	tau_lijstje = [3.5e-3]
 
@@ -286,26 +290,25 @@ def main():
 		# save_all_information(dt, tfinal, tau)
 
 
-		#
-		# pvt_file = np.load("cutoff_a_0.0148_all_info_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".npz")
-		#
-		# dr = fn.calculate_vratio(dt, pvt_file['pos_leapfrog'])
-		# v_ratio = dr/pvt_file['v_kep'][:-1]
+		pvt_file = np.load("try_2_cutoff_a_0.0148_all_info_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".npz")
+		# #
+		print pvt_file.files
+
+		dr = fn.calculate_vratio(dt, pvt_file['pos_leapfrog'])
+		v_ratio = dr/pvt_file['v_kep'][:-1]
 		#
 		# plt.plot( pvt_file['time'][:-1], v_ratio, label='{:0.2e}'.format(tau))
-		# plot_vratio_vs_tau(tau, v_ratio, min=2/dt,max=6/dt)
+		# # plot_vratio_vs_tau(tau, v_ratio, min=2/dt,max=6/dt)
+		#
+		plt.plot(pvt_file['time'], pvt_file['a_leapfrog'], label='{:0.2e}'.format(tau))
 
-		# plt.plot(pvt_file['time'], pvt_file['a_leapfrog'], label='{:0.2e}'.format(tau))
 
 
-
-		'''dit is voor np.save manier van opslaan'''
+		# '''use this to plot when files saved using np.save'''
 		# pos_leapfrog, v_kep, time =\
 		# np.load("pos_vkep_time_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".npy")
 		# v_ratio = [ time[:-1], dr/v_kep[:-1] ]
 		# plt.plot(v_ratio[0], v_ratio[1], label='{:0.2e}'.format(tau))
-
-
 
 
 
