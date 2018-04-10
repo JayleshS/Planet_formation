@@ -97,6 +97,9 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 		time_list.append(time)
 
 		time += dt
+		# print time, a
+		if a < 0.15:
+			break
 
 		'''Stop simulation when low semi-major axis is reached"'''
 		if a < 0.0148:
@@ -156,8 +159,8 @@ def plot_pos(particles, ax_range=1.2, tfinal=None, save=False, name='test'):
 	plt.plot(xarr[:, 0, 0, 0], xarr[:, 0, 0, 1], c='y')
 	plt.plot(xarr[:, 1, 0, 0], xarr[:, 1, 0, 1], label='Test particle', c='indianred')
 
-	plt.scatter(1.,0, c="b", label='Initial postition')
-	plt.scatter(0,0, c="y", label='Sun')
+	# plt.scatter(1.,0, c="b", label='Initial postition')
+	# plt.scatter(0,0, c="y", label='Sun')
 
 	plt.legend()
 	plt.xlabel('$x_{pos}$(au)')
