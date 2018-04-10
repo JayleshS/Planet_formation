@@ -255,11 +255,11 @@ def load_files(dt, tfinal, tau):
 	marr = np.zeros(2)
 	v_kep = np.zeros(1)
 
-	[[thing[0], time, particles[0,0,0], particles[0,0,1], particles[0,0,2], particles[0,1,0], particles[0,1,1], particles[0,1,2], marr[0], rubbish],\
+	[[thing[0], time, particles[0,0,0], particles[0,0,1], particles[0,0,2], particles[0,1,0], particles[0,1,1], particles[0,1,2], marr[0], v_kep],\
 	 [thing[1], time, particles[1,0,0], particles[1,0,1], particles[1,0,2], particles[1,1,0], particles[1,1,1], particles[1,1,2], marr[1], v_kep  ] ] = \
 	 np.loadtxt( "object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
 
-	return particles, marr
+	return time, particles, v_kep
 
 def vr_file(dt, tfinal, tau, save=True):
 	pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
@@ -305,18 +305,17 @@ def main():
 		print 'calculating', tau
 		# save_all_information(dt, tfinal, tau)
 
-		# leapfrog(dt, tfinal, tau)
+		# leapfrog(dt, tfinal, tau, drag=True)
 
 	 	# file_to_load = np.loadtxt( "object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
 		# print file_to_load
 		# #
-		particles, marr = load_files(dt,tfinal,tau)
+		time, particles, v_kep = load_files(dt,tfinal,tau)
 
-		# dr = fn.calculate_vratio(dt, particles)
-		#
-		# print dr
 
-		# plt.plot( dr/v_kep[:-1] )
+		dr = fn.calculate_vratio(dt, particles)
+
+		plt.plot(time[:-1],  dr/v_kep[:-1] )
 
 
 		# print probeer
