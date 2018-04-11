@@ -154,6 +154,8 @@ def calculate_vratio(dt, pos_leapfrog):
 
 
 #
-# x = np.linspace(0, 1, num=1000)
-# plt.plot(x, gaussian(x))
+# x = np.linspace(0.1, 1, num=1000)
+# plt.plot(x, x**(-(3-gaussian(x, ))))
+# plt.xscale('Log')
+# plt.yscale('Log')
 # plt.show()

@@ -59,7 +59,7 @@ def midpoint(dt, tfinal):
 
 
 def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
-	# save_file = open("object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv", "w")
+	save_file = open("object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv", "w")
 
 	particles, marr = fn.init_2body(init_e)
 	etot0 = fn.e_tot(particles, marr)
@@ -94,26 +94,26 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 
 
 
-		# for i in [0,1]:
-		# 	np.savetxt(save_file,np.c_[i, time, particles[i,0,0], particles[i,0,1], particles[i,0,2], \
-		# 	particles[i,1,0], particles[i,1,1], particles[i,1,2], marr[i], v_kep], delimiter=',', fmt='%.10e')
+		for i in [0,1]:
+			np.savetxt(save_file,np.c_[i, time, particles[i,0,0], particles[i,0,1], particles[i,0,2], \
+			particles[i,1,0], particles[i,1,1], particles[i,1,2], marr[i], v_kep], delimiter=',', fmt='%.10e')
 
 
-		eccentricity.append(np.sqrt(sum(ecc)**2))
-		semi_major_axis.append(a)
-		vkep_list.append(v_kep)
-		time_list.append(time)
+		# eccentricity.append(np.sqrt(sum(ecc)**2))
+		# semi_major_axis.append(a)
+		# vkep_list.append(v_kep)
+		# time_list.append(time)
 
 		time += dt
 
 		if a < 0.15:
 			break
 
-	etot1 = fn.e_tot(particles, marr)
-	e_error = (etot1 - etot0) / etot0
-
-
-	return x_and_v, e_error, semi_major_axis, eccentricity, vkep_list, time_list
+	# etot1 = fn.e_tot(particles, marr)
+	# e_error = (etot1 - etot0) / etot0
+	#
+	#
+	# return x_and_v, e_error, semi_major_axis, eccentricity, vkep_list, time_list
 
 
 def hermite(dt, tfinal):
