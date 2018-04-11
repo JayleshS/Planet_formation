@@ -95,8 +95,6 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 			np.savetxt(save_file,np.c_[i, time, particles[i,0,0], particles[i,0,1], particles[i,0,2], \
 			particles[i,1,0], particles[i,1,1], particles[i,1,2], marr[i], np.array([v_kep])], delimiter=',', fmt='%.10e')
 
-		# np.savetxt(save_a,a)
-
 
 		# eccentricity.append(np.sqrt(sum(ecc)**2))
 		# semi_major_axis.append(a)
@@ -108,8 +106,8 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 		if a < 0.15:
 			break
 
-	# etot1 = fn.e_tot(particles, marr)
-	# e_error = (etot1 - etot0) / etot0
+	etot1 = fn.e_tot(particles, marr)
+	e_error = (etot1 - etot0) / etot0
 
 
 	return #x_and_v, e_error, semi_major_axis, eccentricity, vkep_list, time_list
@@ -267,7 +265,7 @@ def vr_file(dt, tfinal, tau, save=True):
 	dr = fn.calculate_vratio(dt, pos_leapfrog)
 
 	if save:
-		np.save("test_vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]), dr/v_kep[:-1]] )
+		np.save("vratio_dt=" + str(dt)+"_tfinal=" + str(tfinal) + "_tau=" + str(tau),  [np.array(time[:-1]), dr/v_kep[:-1]] )
 
 	return time[:-1], dr/v_kep[:-1]
 
@@ -278,14 +276,14 @@ def save_all_information(dt, tfinal, tau):
 
 	# np.save("pos_vkep_time_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau), [np.array(pos_leapfrog), np.array(v_kep), np.array(time)])
 	# np.savez("arrays_pos_vkep_time_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time )
-	np.savez("rubbish_a_0.0148_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time)
+	np.savez("a_0.0148_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time)
 	 # e_error=e_error, a_leapfrog=a_leapfrog, eccentricity=eccentricity)
 
 
 
 def main():
 	dt     = 0.0001
-	tfinal = 0.0001
+	tfinal = 0.001
 
 	calc_step = 10
 	omega_k = (2*np.pi)
@@ -298,24 +296,24 @@ def main():
 
 	# tau_lijstje=[0.002,0.00859505945175,0.0369375234896, 0.158740105197,0.682190320772,2.93173318222,12.5992104989,54.1454816418,232.691816878,1000.0]
 
-	# tau_we_need_high_tfinal = [3.5e-3, 0.008595059451754268,12.599210498948729,54.14548164181537,232.6918168776362,1000.0]
-	tau_lijstje = [1.0]
+	tau_we_need_high_tfinal = [3.5e-3, 0.008595059451754268,12.599210498948729,54.14548164181537,232.6918168776362,1000.0]
+	# tau_lijstje = [1.0]
 
-	for tau in tau_lijstje:
+	for tau in tau_we_need_high_tfinal:
 		print 'calculating', tau
 		# save_all_information(dt, tfinal, tau)
 
 		# leapfrog(dt, tfinal, tau, drag=True)
 
-	 	# file_to_load = np.loadtxt( "object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
-		# print file_to_load
-		# #
+	 	file_to_load = np.loadtxt( "object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
+		print file_to_load
+		#
 		time, particles, v_kep = load_files(dt,tfinal,tau)
 
 
-		dr = fn.calculate_vratio(dt, particles)
-
-		plt.plot(time[:-1],  dr/v_kep[:-1] )
+		# dr = fn.calculate_vratio(dt, particles)
+		#
+		# plt.plot(time[:-1],  dr/v_kep[:-1] )
 
 
 		# print probeer
@@ -354,8 +352,8 @@ def main():
 	# # plt.yscale("Log")
 	# plt.ylabel("semi major axis $a$ [AU]")
 	# # plt.title("vrad is (vji[0] - v_gas[0])* 0.1")
-	# plt.legend()
-	# plt.show()
+	plt.legend()
+	plt.show()
 	# # plt.savefig('semimajoraxis_extra_tau.png', transparant=True)
 	# plt.close()
 
