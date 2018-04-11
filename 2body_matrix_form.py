@@ -2,6 +2,7 @@ import numpy as np
 import pars
 import functions_matrix_form as fn
 import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
 
 plt.rcParams['axes.linewidth'] = 2   # Create thicker lines around plots
 plt.rcParams['lines.linewidth'] = 2  # Create thicker lines in plots
@@ -56,7 +57,7 @@ def midpoint(dt, tfinal):
 
 
 def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
-	save_file = open("object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv", "w")
+	# save_file = open("object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv", "w")
 
 	particles, marr = fn.init_2body(init_e)
 	etot0 = fn.e_tot(particles, marr)
@@ -91,28 +92,28 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 
 
 
-		for i in [0,1]:
-			np.savetxt(save_file,np.c_[i, time, particles[i,0,0], particles[i,0,1], particles[i,0,2], \
-			particles[i,1,0], particles[i,1,1], particles[i,1,2], marr[i], v_kep], delimiter=',', fmt='%.10e')
+		# for i in [0,1]:
+		# 	np.savetxt(save_file,np.c_[i, time, particles[i,0,0], particles[i,0,1], particles[i,0,2], \
+		# 	particles[i,1,0], particles[i,1,1], particles[i,1,2], marr[i], v_kep], delimiter=',', fmt='%.10e')
 
 		# np.savetxt(save_a,a)
 
 
-		# eccentricity.append(np.sqrt(sum(ecc)**2))
-		# semi_major_axis.append(a)
-		# vkep_list.append(v_kep)
-		# time_list.append(time)
+		eccentricity.append(np.sqrt(sum(ecc)**2))
+		semi_major_axis.append(a)
+		vkep_list.append(v_kep)
+		time_list.append(time)
 
 		time += dt
 
 		if a < 0.15:
 			break
 
-	# etot1 = fn.e_tot(particles, marr)
-	# e_error = (etot1 - etot0) / etot0
+	etot1 = fn.e_tot(particles, marr)
+	e_error = (etot1 - etot0) / etot0
 
 
-	return #x_and_v, e_error, semi_major_axis, eccentricity, vkep_list, time_list
+	return x_and_v, e_error, semi_major_axis, eccentricity, vkep_list, time_list
 
 
 def hermite(dt, tfinal):
@@ -225,10 +226,10 @@ def plot_vratio_vs_tau(tau, v_ratio,min=0, max=-1):
 	plt.scatter(tau,np.average(v_ratio[int(min):int(max)]))
 
 	tauvals = np.geomspace(1e-3, 1e3, num=100)
-	plt.plot(tauvals, taustop(tauvals, n=3))
+	plt.plot(tauvals, v_ratio_analytic(tauvals, 2.76))
 	# gaussian(rad, r0=0.5, sigma=0.01, n=3)
 
-	plt.axvline(x=1, linestyle="dotted", c="indianred")
+	# plt.axvline(x=1, linestyle="dotted", c="indianred")
 	plt.xscale("Log")
 	plt.yscale("Log")
 	plt.xlabel("$\\tau_{fric}$")
@@ -237,7 +238,7 @@ def plot_vratio_vs_tau(tau, v_ratio,min=0, max=-1):
 	plt.legend()
 
 
-def taustop(tau, n=3):
+def v_ratio_analytic(tau, n):
 	"""
 	Takes value for tau and returns ratio of vr and vk
 	"""
@@ -285,21 +286,22 @@ def vr_file(dt, tfinal, tau, save=True):
 def save_all_information(dt, tfinal, tau):
 	'''save (all or some) information, savez saves the arrays seperatly, each accesible by keywords'''
 
-	pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
+	pos_leapfrog, _, a_leapfrog,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
 
 	# np.save("pos_vkep_time_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau), [np.array(pos_leapfrog), np.array(v_kep), np.array(time)])
 	# np.savez("arrays_pos_vkep_time_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time )
-	np.savez("rubbish_a_0.0148_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time)
+	np.savez("test_with_vhead=0.002503_a_0.0148_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time, a_leapfrog=a_leapfrog)
 	 # e_error=e_error, a_leapfrog=a_leapfrog, eccentricity=eccentricity)
 
 
 
 def main():
 	dt     = 0.0001
-	tfinal = 0.0003
+	tfinal = 10
 
 	calc_step = 10
 	omega_k = (2*np.pi)
+	average_vratio = []
 
 	tau_vals = np.geomspace(2e-3, 1e3, num=10)
 	tau_vals[0] = 3.5e-3
@@ -310,7 +312,7 @@ def main():
 	# tau_lijstje=[0.002,0.00859505945175,0.0369375234896, 0.158740105197,0.682190320772,2.93173318222,12.5992104989,54.1454816418,232.691816878,1000.0]
 
 	# tau_we_need_high_tfinal = [3.5e-3, 0.008595059451754268,12.599210498948729,54.14548164181537,232.6918168776362,1000.0]
-	tau_lijstje = [1.0]
+	# tau_lijstje = [1.0]
 
 	for tau in tau_lijstje:
 		print 'calculating', tau
@@ -318,7 +320,7 @@ def main():
 
 		# leapfrog(dt, tfinal, tau, drag=True)
 
-		load_files(dt,tfinal,tau)
+		# load_files(dt,tfinal,tau)
 	 	# file_to_load = np.loadtxt( "object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
 		# print 
 		#		time, particles, v_kep = load_files(dt,tfinal,tau)
@@ -334,19 +336,22 @@ def main():
 		# print loaded_file
 		# print np.loadtxt("hope_it_works_v_kep_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".dat")
 
-		# pvt_file = np.load("try_2_cutoff_a_0.0148_all_info_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".npz")
-		# # #
-		# print pvt_file.files
-		#
-		# dr = fn.calculate_vratio(dt, pvt_file['pos_leapfrog'])
-		# v_ratio = dr/pvt_file['v_kep'][:-1]
-		# #
-		# # plt.plot( pvt_file['time'][:-1], v_ratio, label='{:0.2e}'.format(tau))
-		# # # plot_vratio_vs_tau(tau, v_ratio, min=2/dt,max=6/dt)
-		# #
+		pvt_file = np.load("test_with_vhead=0.002503_a_0.0148_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".npz")
+		
+		print pvt_file.files
+		
+		dr = fn.calculate_vratio(dt, pvt_file['pos_leapfrog'])
+		v_ratio = dr/pvt_file['v_kep'][:-1]
+		
+		# plt.plot( pvt_file['time'][:-1], v_ratio, label='{:0.2e}'.format(tau))
+		plot_vratio_vs_tau(tau, v_ratio, min=4/dt)
+
+
+		average_vratio.append(np.average(v_ratio[int(4/dt):-1]))
 		# plt.plot(pvt_file['time'], pvt_file['a_leapfrog'], label='{:0.2e}'.format(tau))
 
 
+	print curve_fit(v_ratio_analytic, tau_lijstje, average_vratio)	
 
 		# '''use this to plot when files saved using np.save'''
 		# pos_leapfrog, v_kep, time =\
@@ -366,7 +371,7 @@ def main():
 	# plt.ylabel("semi major axis $a$ [AU]")
 	# # plt.title("vrad is (vji[0] - v_gas[0])* 0.1")
 	# plt.legend()
-	# plt.show()
+	plt.show()
 	# # plt.savefig('semimajoraxis_extra_tau.png', transparant=True)
 	# plt.close()
 
