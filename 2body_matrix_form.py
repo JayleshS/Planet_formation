@@ -226,16 +226,16 @@ def plot_vratio_vs_tau(tau, v_ratio,min=0, max=-1):
 	plt.scatter(tau,np.average(v_ratio[int(min):int(max)]))
 
 	tauvals = np.geomspace(1e-3, 1e3, num=100)
-	plt.plot(tauvals, v_ratio_analytic(tauvals, 4.3715))
+	plt.plot(tauvals, v_ratio_analytic(tauvals, 3))
+	# gaussian(rad, r0=0.5, sigma=0.01, n=3)
 
 	# plt.axvline(x=1, linestyle="dotted", c="indianred")
 	plt.xscale("Log")
 	plt.yscale("Log")
 	plt.xlabel("$\\tau_{fric}$")
 	plt.ylabel("$v_{r}/v_{K}$")
-	plt.title("Radial drift for $n$=4.3715")
+	plt.title("Radial drift for $n$=3")
 	plt.legend()
-
 
 
 def v_ratio_analytic(tau, n):
@@ -290,18 +290,18 @@ def save_all_information(dt, tfinal, tau):
 
 	# np.save("pos_vkep_time_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau), [np.array(pos_leapfrog), np.array(v_kep), np.array(time)])
 	# np.savez("arrays_pos_vkep_time_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time )
-	np.savez("no_bump_fixing_eta=0.004_a_0.0148_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time,a_leapfrog=a_leapfrog)
+	np.savez("eerste_pressure_bump_echt_met_bump_a_0.0148_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau),  pos_leapfrog=pos_leapfrog, v_kep=v_kep, time=time, a_leapfrog=a_leapfrog)
 	 # e_error=e_error, a_leapfrog=a_leapfrog, eccentricity=eccentricity)
 
 
 
 def main():
 	dt     = 0.0001
-	tfinal = 10
+	tfinal = 40
 
 	calc_step = 10
 	omega_k = (2*np.pi)
-	average_vratio=[]
+	average_vratio = []
 
 	tau_vals = np.geomspace(2e-3, 1e3, num=10)
 	tau_vals[0] = 3.5e-3
@@ -312,7 +312,8 @@ def main():
 	# tau_lijstje=[0.002,0.00859505945175,0.0369375234896, 0.158740105197,0.682190320772,2.93173318222,12.5992104989,54.1454816418,232.691816878,1000.0]
 
 	# tau_we_need_high_tfinal = [3.5e-3, 0.008595059451754268,12.599210498948729,54.14548164181537,232.6918168776362,1000.0]
-	# tau_lijstje = [1.0]
+	tau_lijstje = [0.6821903207721965]
+
 
 	for tau in tau_lijstje:
 		print 'calculating', tau
@@ -336,26 +337,23 @@ def main():
 		# print loaded_file
 		# print np.loadtxt("hope_it_works_v_kep_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".dat")
 
-		pvt_file = np.load("no_bump_fixing_eta=0.004_a_0.0148_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".npz")
-		# # #
+		pvt_file = np.load("eerste_pressure_bump_echt_met_bump_a_0.0148_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".npz")
+
+
 		print pvt_file.files
-		#
+
 		dr = fn.calculate_vratio(dt, pvt_file['pos_leapfrog'])
 		v_ratio = dr/pvt_file['v_kep'][:-1]
-		#
+
 		# plt.plot( pvt_file['time'][:-1], v_ratio, label='{:0.2e}'.format(tau))
-		# plot_vratio_vs_tau(tau, v_ratio, min=5/dt)
-
-		# average_vratio.append(np.average(v_ratio[int(5):-1]))
+		# plot_vratio_vs_tau(tau, v_ratio, min=4/dt)
 
 
-
-	# print 'curvefit ding',curve_fit(v_ratio_analytic, tau_lijstje, average_vratio)
-
-
-		plt.plot(pvt_file['time'], pvt_file['a_leapfrog'], label='{:0.2e}'.format(tau))
+		# average_vratio.append(np.average(v_ratio[int(4/dt):]))
+		# plt.plot(pvt_file['time'], pvt_file['a_leapfrog'], label='{:0.2e}'.format(tau))
 
 
+	# print curve_fit(v_ratio_analytic, tau_lijstje, average_vratio)
 
 		# '''use this to plot when files saved using np.save'''
 		# pos_leapfrog, v_kep, time =\
@@ -365,7 +363,7 @@ def main():
 
 
 
-		# plot_pos(pos_leapfrog)
+		plot_pos(pvt_file['pos_leapfrog'])
 		# plt.show()
 
 	plt.xlabel("time [yr]")
@@ -373,10 +371,10 @@ def main():
 	# plt.xscale("Log")
 	# plt.yscale("Log")
 	# plt.ylabel("semi major axis $a$ [AU]")
-	# plt.title("vrad is (vji[0] - v_gas[0])* 0.1")
+	# # plt.title("vrad is (vji[0] - v_gas[0])* 0.1")
 	plt.legend()
 	plt.show()
-	# plt.savefig('semimajoraxis_extra_tau.png', transparant=True)
+	# # plt.savefig('semimajoraxis_extra_tau.png', transparant=True)
 	# plt.close()
 
 if __name__ == '__main__':

@@ -50,7 +50,7 @@ def forces_hermite(particles, marr):
 
     return acc, jer
 
-def forces_migration(particles, marr, tau, n=3, hr_ratio = 0.05, v_r=None):
+def forces_migration(particles, marr, tau, n=3, v_r=None):
     acc = np.zeros((pars.Np,3))
     rji = particles[1, 0, :] - particles[0, 0, :]
     vji = particles[1, 1, :] - particles[0, 1, :]
@@ -66,16 +66,15 @@ def forces_migration(particles, marr, tau, n=3, hr_ratio = 0.05, v_r=None):
     # calculate vkep and headwind
     v_kep  = np.sqrt(pars.gN*(marr[0] + marr[1]) / rad)
 
-
-    '''9975, 9987, 0.004'''
+    eta = (n + gaussian(rad,n=n) ) * 0.05**2
+    # eta = n * 0.05**2
+    v_head = (1 - np.sqrt(1- eta) ) * v_kep
 
     # t stop from dimensionless to yrs
     t_stop = tau / (v_kep / rad)
 
     # calculate velocities of gas in cylindrical coords
-    eta = n * hr_ratio**2
-    # gaussian(rad,r0=0.5, sigma=0.01, n=3)
-    v_phi_gas = np.sqrt(1-eta)
+    v_phi_gas = v_kep - v_head
 
     v_r_gas = 0
 
@@ -140,10 +139,10 @@ def get_orbital_elements(particles, marr):
     return e, a
 
 
-def gaussian(rad, r0=0.5, sigma=0.05, n=3):
-    gauss = 0.4*np.exp(-0.5*((rad - r0) / sigma)**2)
-    eta = n*0.05**2
-    return gauss + eta
+def gaussian(rad, r0=0.5, sigma=0.02, n=3):
+    gauss = -6*np.exp(-0.5*((rad - r0) / sigma)**2)
+
+    return gauss
 
 
 def calculate_vratio(dt, pos_leapfrog):
@@ -153,6 +152,8 @@ def calculate_vratio(dt, pos_leapfrog):
     dr = (rji[:-1]-rji[1:])/dt
     return dr
 
+
+#
 # x = np.linspace(0, 1, num=1000)
 # plt.plot(x, gaussian(x))
 # plt.show()
