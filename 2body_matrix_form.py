@@ -56,7 +56,7 @@ def midpoint(dt, tfinal):
 
 
 def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
-	save_file = open("object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv", "a")
+	save_file = open("object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv", "w")
 
 	particles, marr = fn.init_2body(init_e)
 	etot0 = fn.e_tot(particles, marr)
@@ -93,7 +93,7 @@ def leapfrog(dt, tfinal, tau, drag=False, init_e=0.0):
 
 		for i in [0,1]:
 			np.savetxt(save_file,np.c_[i, time, particles[i,0,0], particles[i,0,1], particles[i,0,2], \
-			particles[i,1,0], particles[i,1,1], particles[i,1,2], marr[i], np.array([v_kep])], delimiter=',', fmt='%.10e')
+			particles[i,1,0], particles[i,1,1], particles[i,1,2], marr[i], v_kep], delimiter=',', fmt='%.10e')
 
 
 		# eccentricity.append(np.sqrt(sum(ecc)**2))
@@ -253,11 +253,22 @@ def load_files(dt, tfinal, tau):
 	marr = np.zeros(2)
 	v_kep = np.zeros(1)
 
-	[[thing[0], time, particles[0,0,0], particles[0,0,1], particles[0,0,2], particles[0,1,0], particles[0,1,1], particles[0,1,2], marr[0], v_kep],\
-	 [thing[1], time, particles[1,0,0], particles[1,0,1], particles[1,0,2], particles[1,1,0], particles[1,1,1], particles[1,1,2], marr[1], v_kep  ] ] = \
-	 np.loadtxt( "object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
 
-	return time, particles, v_kep
+	file_arr = np.loadtxt("object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
+	amount_of_steps = len(file_arr[:, 0])/2
+
+	for line in file_arr:
+		time = line[1]
+		n = int(line[0])
+		for dimension in range(3):
+			particles[n, 0, dimension] = round(line[dimension + 2], 5)
+			particles[n, 1, dimension] = round(line[dimension + 5], 5)
+		marr[n] = line[-2]
+		v_kep = line[-1]
+		print marr
+		print v_kep
+		print particles, "\n\n"
+	# return time, particles, v_kep
 
 def vr_file(dt, tfinal, tau, save=True):
 	pos_leapfrog, _, _,_, v_kep, time = leapfrog(dt, tfinal, tau, drag=True)
@@ -283,7 +294,7 @@ def save_all_information(dt, tfinal, tau):
 
 def main():
 	dt     = 0.0001
-	tfinal = 0.001
+	tfinal = 0.0003
 
 	calc_step = 10
 	omega_k = (2*np.pi)
@@ -296,23 +307,23 @@ def main():
 
 	# tau_lijstje=[0.002,0.00859505945175,0.0369375234896, 0.158740105197,0.682190320772,2.93173318222,12.5992104989,54.1454816418,232.691816878,1000.0]
 
-	tau_we_need_high_tfinal = [3.5e-3, 0.008595059451754268,12.599210498948729,54.14548164181537,232.6918168776362,1000.0]
-	# tau_lijstje = [1.0]
+	# tau_we_need_high_tfinal = [3.5e-3, 0.008595059451754268,12.599210498948729,54.14548164181537,232.6918168776362,1000.0]
+	tau_lijstje = [1.0]
 
-	for tau in tau_we_need_high_tfinal:
+	for tau in tau_lijstje:
 		print 'calculating', tau
 		# save_all_information(dt, tfinal, tau)
 
 		# leapfrog(dt, tfinal, tau, drag=True)
 
-	 	file_to_load = np.loadtxt( "object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
-		print file_to_load
-		#
-		time, particles, v_kep = load_files(dt,tfinal,tau)
+		load_files(dt,tfinal,tau)
+	 	# file_to_load = np.loadtxt( "object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
+		# print
+		#		time, particles, v_kep = load_files(dt,tfinal,tau)
 
 
 		# dr = fn.calculate_vratio(dt, particles)
-		#
+
 		# plt.plot(time[:-1],  dr/v_kep[:-1] )
 
 
@@ -352,8 +363,8 @@ def main():
 	# # plt.yscale("Log")
 	# plt.ylabel("semi major axis $a$ [AU]")
 	# # plt.title("vrad is (vji[0] - v_gas[0])* 0.1")
-	plt.legend()
-	plt.show()
+	# plt.legend()
+	# plt.show()
 	# # plt.savefig('semimajoraxis_extra_tau.png', transparant=True)
 	# plt.close()
 
