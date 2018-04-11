@@ -256,17 +256,20 @@ def load_files(dt, tfinal, tau):
 	v_kep = np.zeros(1)
 
 
-	whole_arr = np.loadtxt("object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
-	amount_of_steps = len(whole_arr[:, 0])/2
-	# for step in amount_of_steps:
-		# print whole_arr[]
-	print whole_arr
+	file_arr = np.loadtxt("object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
+	amount_of_steps = len(file_arr[:, 0])/2
 
-
-	[[thing[0], time, particles[0,0,0], particles[0,0,1], particles[0,0,2], particles[0,1,0], particles[0,1,1], particles[0,1,2], marr[0], v_kep],\
-	 [thing[1], time, particles[1,0,0], particles[1,0,1], particles[1,0,2], particles[1,1,0], particles[1,1,1], particles[1,1,2], marr[1], v_kep  ] ] = \
-	 np.loadtxt( "object_time_x,v,m_dt=" + str(dt) + "_tfinal=" + str(tfinal) + "_tau=" +str(tau)+".csv",delimiter=',' )
-
+	for line in file_arr:
+		time = line[1]
+		n = int(line[0])
+		for dimension in range(3):
+			particles[n, 0, dimension] = round(line[dimension + 2], 5)
+			particles[n, 1, dimension] = round(line[dimension + 5], 5)
+		marr[n] = line[-2]
+		v_kep = line[-1]
+		print marr
+		print v_kep
+		print particles, "\n\n"
 	# return time, particles, v_kep
 
 def vr_file(dt, tfinal, tau, save=True):
@@ -293,7 +296,7 @@ def save_all_information(dt, tfinal, tau):
 
 def main():
 	dt     = 0.0001
-	tfinal = 0.0005
+	tfinal = 0.0003
 
 	calc_step = 10
 	omega_k = (2*np.pi)
